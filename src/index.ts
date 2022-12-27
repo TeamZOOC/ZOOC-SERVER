@@ -1,5 +1,5 @@
 // src/index.ts
-import express, { NextFunction, Request, Response } from "express";
+import express, { NextFunction, Request, Response } from 'express';
 
 const app = express(); // express 객체 받아옴
 const PORT = 3000; // 사용할 port를 3000번으로 설정
@@ -11,8 +11,8 @@ app.use(express.json()); // express 에서 request body를 json 으로 받아오
 // localhost:8000/api/user -> user.ts
 
 //* HTTP method - GET
-app.get("/", (req: Request, res: Response, next: NextFunction) => {
-  res.send("마! 이게 서버다!");
+app.get('/', (req: Request, res: Response, next: NextFunction) => {
+  res.send('마! 이게 서버다!');
 });
 
 app.listen(PORT, () => {
@@ -22,3 +22,5 @@ app.listen(PORT, () => {
         #############################################
     `);
 }); // 8000 번 포트에서 서버를 실행하겠다!
+
+const a: String = 'abc';
