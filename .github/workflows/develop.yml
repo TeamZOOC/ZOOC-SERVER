@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-18.04
 
-    startegy:
+    strategy:
       matrix:
         node-version: [16.19.0]
     
