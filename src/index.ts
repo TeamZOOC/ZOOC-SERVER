@@ -23,4 +23,4 @@ app.listen(PORT, () => {
     `);
 }); // 8000 번 포트에서 서버를 실행하겠다!
 
-const a: String = 'abc';
+const a: String = 'df';
