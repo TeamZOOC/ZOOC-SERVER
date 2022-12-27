@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc && node dist"
+    "build": "tsc"
   },
   "dependencies": {
     "@prisma/client": "^4.8.0",
