@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc && node dist",
+    "build": "tsc",
     "lint": "eslint ./src"
   },
   "dependencies": {
