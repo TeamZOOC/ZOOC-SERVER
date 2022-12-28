@@ -37,22 +37,22 @@ jobs:
           yarn
           yarn run build
 
-      # - name: zip file
-      #   run: zip -r zooc.zip ./dist ./scripts ./appspec.yml ./.env ./package.json
+      - name: zip file
+        run: zip -r zooc.zip ./dist ./scripts ./appspec.yml ./.env ./package.json
 
-      # - name: AWS configure credientials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ secrets.AWS_REGION }}
+      - name: AWS configure credientials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
       
-      # - name: upload to S3
-      #   run: aws s3 cp --region ap-northeast-2 ./zooc.zip s3://zooc-bucket/deploy/
+      - name: upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./zooc.zip s3://zooc-bucket/deploy/
 
-      # - name: deploy with AWS codeDeploy
-      #   run: aws deploy create-deployment
-      #     --application-name zooc
-      #     --deployment-config-name CodeDeployDefault.AllAtOnce
-      #     --deployment-group-name zooc-deploy-group
-      #     --s3-location bucket=zooc,bundleType=zip,key=deploy/zooc.zip
+      - name: deploy with AWS codeDeploy
+        run: aws deploy create-deployment
+          --application-name zooc
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name zooc-deploy-group
+          --s3-location bucket=zooc-bucket,bundleType=zip,key=deploy/zooc.zip
