@@ -8,7 +8,10 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "db:pull": "npx prisma db pull",
+    "db:push": "npx prisma db push",
+    "generate": "npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^4.8.0",
