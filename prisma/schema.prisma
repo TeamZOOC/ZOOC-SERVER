@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,89 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model comment {
+  id         Int      @id @default(autoincrement())
+  content    String   @db.VarChar(200)
+  writer     Int
+  record_id  Int
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  record     record   @relation(fields: [record_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "comment_record_id_fk")
+  user       user     @relation(fields: [writer], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "comment_user_id_fk")
+}
+
+model family {
+  id          Int           @id @default(autoincrement())
+  code        String        @unique @db.VarChar(100)
+  created_at  DateTime      @default(now()) @db.Timestamp(6)
+  updated_at  DateTime      @default(now()) @db.Timestamp(6)
+  pet         pet[]
+  user_family user_family[]
+}
+
+model mission {
+  id              Int      @id @default(autoincrement())
+  mission_content String   @db.VarChar(200)
+  record          record[]
+}
+
+model pet {
+  id         Int          @id @default(autoincrement())
+  name       String       @db.VarChar(100)
+  photo      String?      @db.VarChar(500)
+  family_id  Int
+  created_at DateTime     @default(now()) @db.Timestamp(6)
+  updated_at DateTime     @default(now()) @db.Timestamp(6)
+  family     family       @relation(fields: [family_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "pet_family_id_fk")
+  record_pet record_pet[]
+}
+
+model record {
+  id         Int          @id @default(autoincrement())
+  content    String       @db.VarChar(800)
+  photo      String       @db.VarChar(500)
+  writer     Int
+  mission_id Int?
+  created_at DateTime     @default(now()) @db.Timestamp(6)
+  updated_at DateTime     @default(now()) @db.Timestamp(6)
+  comment    comment[]
+  mission    mission?     @relation(fields: [mission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "record_mission_id_fk")
+  user       user         @relation(fields: [writer], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "record_user_id_fk")
+  record_pet record_pet[]
+}
+
+model record_pet {
+  id         Int      @id @default(autoincrement())
+  record_id  Int
+  pet_id     Int
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  pet        pet      @relation(fields: [pet_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "record_pet_pet_id_fk")
+  record     record   @relation(fields: [record_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "record_pet_record_id_fk")
+}
+
+model user {
+  id           Int           @id @default(autoincrement())
+  photo        String?       @db.VarChar(500)
+  email        String        @db.VarChar(100)
+  nickName     String        @db.VarChar(100)
+  access_token String        @db.VarChar(200)
+  fcm_token    String        @db.VarChar(200)
+  created_at   DateTime      @default(now()) @db.Timestamp(6)
+  updated_at   DateTime      @default(now()) @db.Timestamp(6)
+  comment      comment[]
+  record       record[]
+  user_family  user_family[]
+}
+
+model user_family {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  family_id  Int
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @default(now()) @db.Timestamp(6)
+  family     family   @relation(fields: [family_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_family_family_id_fk")
+  user       user     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_family_user_id_fk")
 }
