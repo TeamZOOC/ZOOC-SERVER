@@ -1,3 +1,4 @@
+import { MypageResponseDto } from './../interface/family/MypageResponseDto';
 import { FamilyDto } from './../interface/family/FamilyDto';
 import { familyService } from '../service';
 import { Request, Response } from 'express';
@@ -6,7 +7,7 @@ import { fail, success } from '../constants/response';
 
 const getMypage = async (req: Request, res: Response) => {
   try {
-    const data = await familyService.getMypage(1);
+    const data: MypageResponseDto = await familyService.getMypage(1);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_MYPAGE_SUCCESS, data));
   } catch (error) {
     console.error(error);
