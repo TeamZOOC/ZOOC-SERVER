@@ -24,6 +24,7 @@ model family {
   created_at  DateTime      @default(now()) @db.Timestamp(6)
   updated_at  DateTime      @default(now()) @db.Timestamp(6)
   pet         pet[]
+  record      record[]
   user_family user_family[]
 }
 
@@ -52,7 +53,9 @@ model record {
   mission_id Int?
   created_at DateTime     @default(now()) @db.Timestamp(6)
   updated_at DateTime     @default(now()) @db.Timestamp(6)
+  family_id  Int
   comment    comment[]
+  family     family       @relation(fields: [family_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "record_family_id_fk")
   mission    mission?     @relation(fields: [mission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "record_mission_id_fk")
   user       user         @relation(fields: [writer], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "record_user_id_fk")
   record_pet record_pet[]
@@ -77,7 +80,7 @@ model user {
   fcm_token    String        @db.VarChar(200)
   created_at   DateTime      @default(now()) @db.Timestamp(6)
   updated_at   DateTime      @default(now()) @db.Timestamp(6)
-  social_id    String        @unique @db.VarChar(30)
+  social_id    BigInt        @unique
   provider     String        @default("kakao") @db.VarChar(100)
   comment      comment[]
   record       record[]

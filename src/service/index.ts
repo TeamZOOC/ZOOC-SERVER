@@ -1,2 +1,2 @@
-//service / index.ts
+export { default as userService } from './userService';
 export { default as familyService } from './familyService';
