@@ -6,8 +6,8 @@ import { UserDto } from '../interface/user/UserDto';
 const prisma = new PrismaClient();
 
 //~ 사용자의 가족 정보 조회
-const getUserFamily = async (userId: number): Promise<FamilyDto[]> => {
-  const data: FamilyDto[] = await prisma.family.findMany({
+const getUserFamily = async (userId: number): Promise<FamilyDto> => {
+  const data: FamilyDto | null = await prisma.family.findFirst({
     where: {
       user_family: {
         some: {
@@ -16,6 +16,7 @@ const getUserFamily = async (userId: number): Promise<FamilyDto[]> => {
       },
     },
   });
+  if (!data) throw new Error('no family');
 
   return data;
 };
@@ -58,9 +59,9 @@ const getFamilyPets = async (familyId: number): Promise<PetDto[]> => {
 
 //~ 마이페이지 정보 리턴
 const getMypage = async (userId: number): Promise<MypageResponseDto> => {
-  const families: FamilyDto[] = await getUserFamily(userId);
-  const familyMembers: UserDto[] = await getFamilyMembers(families[0].id);
-  const familyPets: PetDto[] = await getFamilyPets(families[0].id);
+  const family: FamilyDto = await getUserFamily(userId);
+  const familyMembers: UserDto[] = await getFamilyMembers(family.id);
+  const familyPets: PetDto[] = await getFamilyPets(family.id);
 
   const data: MypageResponseDto = {
     user: {
