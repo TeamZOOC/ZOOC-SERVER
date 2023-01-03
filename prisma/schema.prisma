@@ -59,35 +59,38 @@ model record {
 }
 
 model record_pet {
-  id         Int      @id @default(autoincrement())
   record_id  Int
   pet_id     Int
   created_at DateTime @default(now()) @db.Timestamp(6)
   updated_at DateTime @default(now()) @db.Timestamp(6)
   pet        pet      @relation(fields: [pet_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "record_pet_pet_id_fk")
   record     record   @relation(fields: [record_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "record_pet_record_id_fk")
+
+  @@id([record_id, pet_id], map: "record_pet_pk")
 }
 
 model user {
   id           Int           @id @default(autoincrement())
   photo        String?       @db.VarChar(500)
-  email        String        @db.VarChar(100)
-  nickName     String        @db.VarChar(100)
+  nick_name    String        @db.VarChar(100)
   access_token String        @db.VarChar(200)
   fcm_token    String        @db.VarChar(200)
   created_at   DateTime      @default(now()) @db.Timestamp(6)
   updated_at   DateTime      @default(now()) @db.Timestamp(6)
+  social_id    String        @unique @db.VarChar(30)
+  provider     String        @default("kakao") @db.VarChar(100)
   comment      comment[]
   record       record[]
   user_family  user_family[]
 }
 
 model user_family {
-  id         Int      @id @default(autoincrement())
   user_id    Int
   family_id  Int
   created_at DateTime @default(now()) @db.Timestamp(6)
   updated_at DateTime @default(now()) @db.Timestamp(6)
   family     family   @relation(fields: [family_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_family_family_id_fk")
   user       user     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_family_user_id_fk")
+
+  @@id([user_id, family_id], map: "user_family_pk")
 }
