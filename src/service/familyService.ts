@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 //~ 사용자의 가족 정보 조회
 const getUserFamily = async (userId: number): Promise<FamilyDto> => {
-  const data: FamilyDto | null = await prisma.family.findFirst({
+  const family: FamilyDto | null = await prisma.family.findFirst({
     where: {
       user_family: {
         some: {
@@ -16,14 +16,14 @@ const getUserFamily = async (userId: number): Promise<FamilyDto> => {
       },
     },
   });
-  if (!data) throw new Error('no family');
+  if (!family) throw new Error('no family');
 
-  return data;
+  return family;
 };
 
 //~ 가족 멤버 조회
 const getFamilyMembers = async (familyId: number): Promise<UserDto[]> => {
-  const data: UserDto[] = await prisma.user.findMany({
+  const users: UserDto[] = await prisma.user.findMany({
     where: {
       user_family: {
         some: {
@@ -38,7 +38,7 @@ const getFamilyMembers = async (familyId: number): Promise<UserDto[]> => {
     },
   });
 
-  return data;
+  return users;
 };
 
 //~ 가족 반려동물 조회
