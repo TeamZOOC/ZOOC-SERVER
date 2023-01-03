@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import { UserDto } from '../interface/user/UserDto';
 const prisma = new PrismaClient();
 
-//~ 사용자의 가족 정보 조회
+//~ 사용자의 전체 가족 정보 조회
 const getUserFamily = async (userId: number): Promise<FamilyDto[]> => {
   const families: FamilyDto[] | null = await prisma.family.findMany({
     where: {
@@ -19,6 +19,18 @@ const getUserFamily = async (userId: number): Promise<FamilyDto[]> => {
   if (!families) throw new Error('no family');
 
   return families;
+};
+
+//~ 특정 가족 정보 조회
+const getFamilyById = async (familyId: number): Promise<FamilyDto> => {
+  const family: FamilyDto | null = await prisma.family.findUnique({
+    where: {
+      id: familyId,
+    },
+  });
+  if (!family) throw new Error('no family');
+
+  return family;
 };
 
 //~ 가족 멤버 조회
@@ -78,6 +90,7 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
 const familyService = {
   getUserFamily,
   getMypage,
+  getFamilyById,
 };
 
 export default familyService;
