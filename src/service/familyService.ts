@@ -76,6 +76,7 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
 };
 
 const familyService = {
+  getUserFamily,
   getMypage,
 };
 

@@ -8,8 +8,8 @@ datasource db {
 }
 
 model comment {
-  id         Int      @id @default(autoincrement())
-  content    String   @db.VarChar(200)
+  id         Int      @id @unique @default(autoincrement())
+  content    String   @db.VarChar(34)
   writer     Int
   record_id  Int
   created_at DateTime @default(now()) @db.Timestamp(6)
@@ -19,7 +19,7 @@ model comment {
 }
 
 model family {
-  id          Int           @id @default(autoincrement())
+  id          Int           @id @unique @default(autoincrement())
   code        String        @unique @db.VarChar(100)
   created_at  DateTime      @default(now()) @db.Timestamp(6)
   updated_at  DateTime      @default(now()) @db.Timestamp(6)
@@ -28,14 +28,14 @@ model family {
 }
 
 model mission {
-  id              Int      @id @default(autoincrement())
+  id              Int      @id @unique @default(autoincrement())
   mission_content String   @db.VarChar(200)
   record          record[]
 }
 
 model pet {
   id         Int          @id @default(autoincrement())
-  name       String       @db.VarChar(100)
+  name       String       @db.VarChar(4)
   photo      String?      @db.VarChar(500)
   family_id  Int
   created_at DateTime     @default(now()) @db.Timestamp(6)
@@ -45,8 +45,8 @@ model pet {
 }
 
 model record {
-  id         Int          @id @default(autoincrement())
-  content    String       @db.VarChar(800)
+  id         Int          @id @unique @default(autoincrement())
+  content    String       @db.VarChar(80)
   photo      String       @db.VarChar(500)
   writer     Int
   mission_id Int?
@@ -70,9 +70,9 @@ model record_pet {
 }
 
 model user {
-  id           Int           @id @default(autoincrement())
+  id           Int           @id @unique @default(autoincrement())
   photo        String?       @db.VarChar(500)
-  nick_name    String        @db.VarChar(100)
+  nick_name    String        @db.VarChar(10)
   access_token String        @db.VarChar(200)
   fcm_token    String        @db.VarChar(200)
   created_at   DateTime      @default(now()) @db.Timestamp(6)
