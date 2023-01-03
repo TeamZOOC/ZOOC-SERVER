@@ -1,3 +1,4 @@
+import { MypageResponseDto } from './../interface/family/MypageResponseDto';
 import { FamilyDto } from './../interface/family/FamilyDto';
 import { familyService } from '../service';
 import { Request, Response } from 'express';
@@ -6,7 +7,7 @@ import { fail, success } from '../constants/response';
 
 const getMypage = async (req: Request, res: Response) => {
   try {
-    const data = await familyService.getMypage(1);
+    const data: MypageResponseDto = await familyService.getMypage(1);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_MYPAGE_SUCCESS, data));
   } catch (error) {
     console.error(error);
@@ -17,8 +18,14 @@ const getMypage = async (req: Request, res: Response) => {
 };
 
 const getFamilyCode = async (req: Request, res: Response) => {
+  const familyId = req.params.familyId;
+  if (!familyId)
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+
   try {
-    const data: FamilyDto = await familyService.getUserFamily(1);
+    const data: FamilyDto = await familyService.getFamilyById(+familyId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_FAMILY_SUCCESS, data));
   } catch (error) {
     return res
