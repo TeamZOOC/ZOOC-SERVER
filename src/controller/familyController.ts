@@ -18,8 +18,14 @@ const getMypage = async (req: Request, res: Response) => {
 };
 
 const getFamilyCode = async (req: Request, res: Response) => {
+  const familyId = req.params.familyId;
+  if (!familyId)
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+
   try {
-    const data: FamilyDto = await familyService.getUserFamily(1);
+    const data: FamilyDto = await familyService.getFamilyById(+familyId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_FAMILY_SUCCESS, data));
   } catch (error) {
     return res
