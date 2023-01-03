@@ -1,1 +1,1 @@
-//service / index.ts
+export { default as userService } from './userService';

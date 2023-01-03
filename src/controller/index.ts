@@ -1,1 +1,1 @@
-// controller/index.ts
+export { default as userController } from './userController';

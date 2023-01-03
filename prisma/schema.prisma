@@ -8,8 +8,8 @@ datasource db {
 }
 
 model comment {
-  id         Int      @id @default(autoincrement())
-  content    String   @db.VarChar(200)
+  id         Int      @id @unique @default(autoincrement())
+  content    String   @db.VarChar(34)
   writer     Int
   record_id  Int
   created_at DateTime @default(now()) @db.Timestamp(6)
@@ -19,23 +19,24 @@ model comment {
 }
 
 model family {
-  id          Int           @id @default(autoincrement())
+  id          Int           @id @unique @default(autoincrement())
   code        String        @unique @db.VarChar(100)
   created_at  DateTime      @default(now()) @db.Timestamp(6)
   updated_at  DateTime      @default(now()) @db.Timestamp(6)
   pet         pet[]
+  record      record[]
   user_family user_family[]
 }
 
 model mission {
-  id              Int      @id @default(autoincrement())
+  id              Int      @id @unique @default(autoincrement())
   mission_content String   @db.VarChar(200)
   record          record[]
 }
 
 model pet {
   id         Int          @id @default(autoincrement())
-  name       String       @db.VarChar(100)
+  name       String       @db.VarChar(4)
   photo      String?      @db.VarChar(500)
   family_id  Int
   created_at DateTime     @default(now()) @db.Timestamp(6)
@@ -45,49 +46,54 @@ model pet {
 }
 
 model record {
-  id         Int          @id @default(autoincrement())
-  content    String       @db.VarChar(800)
+  id         Int          @id @unique @default(autoincrement())
+  content    String       @db.VarChar(80)
   photo      String       @db.VarChar(500)
   writer     Int
   mission_id Int?
   created_at DateTime     @default(now()) @db.Timestamp(6)
   updated_at DateTime     @default(now()) @db.Timestamp(6)
+  family_id  Int
   comment    comment[]
+  family     family       @relation(fields: [family_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "record_family_id_fk")
   mission    mission?     @relation(fields: [mission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "record_mission_id_fk")
   user       user         @relation(fields: [writer], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "record_user_id_fk")
   record_pet record_pet[]
 }
 
 model record_pet {
-  id         Int      @id @default(autoincrement())
   record_id  Int
   pet_id     Int
   created_at DateTime @default(now()) @db.Timestamp(6)
   updated_at DateTime @default(now()) @db.Timestamp(6)
   pet        pet      @relation(fields: [pet_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "record_pet_pet_id_fk")
   record     record   @relation(fields: [record_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "record_pet_record_id_fk")
+
+  @@id([record_id, pet_id], map: "record_pet_pk")
 }
 
 model user {
-  id           Int           @id @default(autoincrement())
+  id           Int           @id @unique @default(autoincrement())
   photo        String?       @db.VarChar(500)
-  email        String        @db.VarChar(100)
-  nickName     String        @db.VarChar(100)
+  nick_name    String        @db.VarChar(10)
   access_token String        @db.VarChar(200)
   fcm_token    String        @db.VarChar(200)
   created_at   DateTime      @default(now()) @db.Timestamp(6)
   updated_at   DateTime      @default(now()) @db.Timestamp(6)
+  social_id    BigInt        @unique
+  provider     String        @default("kakao") @db.VarChar(100)
   comment      comment[]
   record       record[]
   user_family  user_family[]
 }
 
 model user_family {
-  id         Int      @id @default(autoincrement())
   user_id    Int
   family_id  Int
   created_at DateTime @default(now()) @db.Timestamp(6)
   updated_at DateTime @default(now()) @db.Timestamp(6)
   family     family   @relation(fields: [family_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_family_family_id_fk")
   user       user     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_family_user_id_fk")
+
+  @@id([user_id, family_id], map: "user_family_pk")
 }
