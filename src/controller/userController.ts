@@ -3,7 +3,7 @@ import userService from '../service/userService';
 
 const signInKakao = async (req: Request, res: Response) => {
   const headers = req.headers['authorization'];
-  const kakaoToken = headers?.split(' ')[1];
+  const kakaoToken: string | undefined = headers?.split(' ')[1];
 
   const accessToken = await userService.signInKakao(kakaoToken);
 

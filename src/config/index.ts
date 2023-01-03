@@ -14,4 +14,7 @@ export default {
   s3AccessKey: process.env.S3_ACCESS_KEY as string,
   s3SecretKey: process.env.S3_SECRET_KEY as string,
   bucketName: process.env.S3_BUCKET as string,
+
+  //?로그인
+  KAKAO_ID: process.env.KAKAO_ID as string,
 };
