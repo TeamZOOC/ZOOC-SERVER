@@ -8,7 +8,7 @@ const signUp = async (kakaoId: bigint) => {
     data: {
       social_id: kakaoId,
       provider: 'kakao',
-      photo: '',
+      photo: null,
       nick_name: '',
       fcm_token: '',
       jwt_token: '',
