@@ -32,5 +32,5 @@ export default {
 
   // 마이페이지
   GET_MYPAGE_SUCCESS: '마이페이지 조회 성공',
-  GET_FAMILY_SUCCESS: '초대 링크 조회 성공',
+  GET_FAMILY_CODE_SUCCESS: '초대 링크 조회 성공',
 };
