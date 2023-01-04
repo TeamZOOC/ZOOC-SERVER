@@ -26,7 +26,9 @@ const getFamilyCode = async (req: Request, res: Response) => {
 
   try {
     const data: FamilyDto = await familyService.getFamilyById(+familyId);
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_FAMILY_SUCCESS, data));
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.GET_FAMILY_CODE_SUCCESS, data));
   } catch (error) {
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
