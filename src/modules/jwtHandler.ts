@@ -8,10 +8,10 @@ const sign = (userId: number) => {
     userId,
   };
 
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
+  const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
     expiresIn: '2h',
   });
-  return accessToken;
+  return jwtToken;
 };
 
 //* token 검사!

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-const signUp = async (kakaoId: bigint, accessToken: string) => {
+const signUp = async (kakaoId: bigint, jwtToken: string) => {
   await prisma.user.create({
     data: {
       social_id: kakaoId,
@@ -11,7 +11,7 @@ const signUp = async (kakaoId: bigint, accessToken: string) => {
       photo: '',
       nick_name: '',
       fcm_token: '',
-      access_token: accessToken,
+      jwt_token: jwtToken,
     },
   });
 };
@@ -33,17 +33,17 @@ const signInKakao = async (kakaoToken: string | undefined) => {
     },
   });
 
-  const accessToken = jwt.sign(
+  const jwtToken = jwt.sign(
     { kakoId: kakaoId },
     process.env.JWT_SECRET as string,
     { expiresIn: '7d' }
   );
 
   if (!user) {
-    await signUp(kakaoId, accessToken);
+    await signUp(kakaoId, jwtToken);
   }
 
-  return accessToken;
+  return jwtToken;
 };
 
 const userService = {
