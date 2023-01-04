@@ -1,16 +1,16 @@
 // src/modules/jwtHandler.ts
 import jwt from 'jsonwebtoken';
+import config from '../config';
 import tokenType from '../constants/tokenType';
 
-//* 받아온 userId를 담는 access token 생성
-const sign = (userId: number) => {
+//* 받아온 userId, socialId를 담는 jwt token 생성
+const sign = (userId: number, socialId: bigint) => {
   const payload = {
     userId,
+    socialId,
   };
 
-  const jwtToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
-    expiresIn: '2h',
-  });
+  const jwtToken = jwt.sign(payload, config.JWT_SECRET, { expiresIn: '7d' });
   return jwtToken;
 };
 
