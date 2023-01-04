@@ -1,19 +1,35 @@
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
+import jwtHandler from '../modules/jwtHandler';
 const prisma = new PrismaClient();
 
-const signUp = async (kakaoId: bigint, jwtToken: string) => {
-  await prisma.user.create({
+const signUp = async (kakaoId: bigint) => {
+  const user = await prisma.user.create({
     data: {
       social_id: kakaoId,
       provider: 'kakao',
       photo: '',
       nick_name: '',
       fcm_token: '',
+      jwt_token: '',
+    },
+  });
+  const userId = user.id;
+  const payload = {
+    userId,
+  };
+  const jwtToken = jwtHandler.sign(payload);
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
       jwt_token: jwtToken,
     },
   });
+
+  return jwtToken;
 };
 
 const signInKakao = async (kakaoToken: string | undefined) => {
@@ -33,17 +49,17 @@ const signInKakao = async (kakaoToken: string | undefined) => {
     },
   });
 
-  const jwtToken = jwt.sign(
-    { kakoId: kakaoId },
-    process.env.JWT_SECRET as string,
-    { expiresIn: '7d' }
-  );
-
   if (!user) {
-    await signUp(kakaoId, jwtToken);
+    const jwtToken = await signUp(kakaoId);
+    return jwtToken;
+  } else {
+    const userId = user.id;
+    const payload = {
+      userId,
+    };
+    const jwtToken = jwtHandler.sign(payload);
+    return jwtToken;
   }
-
-  return jwtToken;
 };
 
 const userService = {
