@@ -52,14 +52,13 @@ const signInKakao = async (kakaoToken: string | undefined) => {
   if (!user) {
     const jwtToken = await signUp(kakaoId);
     return jwtToken;
-  } else {
-    const userId = user.id;
-    const payload = {
-      userId,
-    };
-    const jwtToken = jwtHandler.sign(payload);
-    return jwtToken;
   }
+  const userId = user.id;
+  const payload = {
+    userId,
+  };
+  const jwtToken = jwtHandler.sign(payload);
+  return jwtToken;
 };
 
 const userService = {
