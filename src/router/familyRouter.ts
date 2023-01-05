@@ -20,4 +20,7 @@ router.post(
   familyController.createPet
 );
 
+//? POST family/user
+router.post('/user', auth, familyController.enrollUsertoFamily);
+
 export default router;
