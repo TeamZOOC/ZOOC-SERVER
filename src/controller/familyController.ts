@@ -77,10 +77,21 @@ const getFamilyCode = async (req: Request, res: Response) => {
 
 const enrollUsertoFamily = async (req: Request, res: Response) => {
   const { userId, code } = req.body;
-  console.log(userId, code);
+
+  // code가 없을 떼
+  if (!code)
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+
   try {
     const data = await familyService.enrollUsertoFamily(userId, code);
-    if (!data) return null;
+    //잘못된 코드 입력
+    if (!data)
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_FAMILY_CODE));
+    //올바른 코드 입력
     else
       return res
         .status(sc.CREATED)
