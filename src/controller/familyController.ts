@@ -77,10 +77,52 @@ const getFamilyCode = async (req: Request, res: Response) => {
   }
 };
 
+const enrollUsertoFamily = async (req: Request, res: Response) => {
+  const { userId, code } = req.body;
+
+  // code가 없을 떼
+  if (!code)
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+
+  try {
+    const data = await familyService.enrollUsertoFamily(userId, code);
+    // 성공
+    if (data) {
+      return res
+        .status(sc.CREATED)
+        .send(success(sc.CREATED, rm.ENROLL_USER_TO_FAMILY_SUCCESS, data));
+    }
+  } catch (error: any) {
+    //가족 다 찼을 때
+    if (error.message === 'full family')
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.FULL_FAMILY_MEMBER));
+
+    //잘못된 코드 입력했을 때
+    if (error.message === 'no family')
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_FAMILY_CODE));
+
+    //이미 등록된 가족일 때
+    if (error.message === 'already family')
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.ALREADY_FAMILY));
+  }
+  return res
+    .status(sc.INTERNAL_SERVER_ERROR)
+    .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+};
+
 const familyController = {
   getMypage,
   getFamilyCode,
   getUserFamily,
   createPet,
+  enrollUsertoFamily,
 };
 export default familyController;

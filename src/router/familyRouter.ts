@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { familyController } from '../controller';
 import auth from '../middleware/auth';
 import { upload } from '../middleware';
+import auth from '../middleware/auth';
 const router: Router = Router();
 
 //? GET family
@@ -19,5 +20,8 @@ router.post(
   upload.single('file'),
   familyController.createPet
 );
+
+//? POST family/user
+router.post('/user', auth, familyController.enrollUsertoFamily);
 
 export default router;
