@@ -86,21 +86,28 @@ const enrollUsertoFamily = async (req: Request, res: Response) => {
 
   try {
     const data = await familyService.enrollUsertoFamily(userId, code);
-    //잘못된 코드 입력
-    if (!data)
-      return res
-        .status(sc.BAD_REQUEST)
-        .send(fail(sc.BAD_REQUEST, rm.BAD_FAMILY_CODE));
-    //올바른 코드 입력
-    else
+    // 성공
+    if (data) {
       return res
         .status(sc.CREATED)
         .send(success(sc.CREATED, rm.ENROLL_USER_TO_FAMILY_SUCCESS, data));
-  } catch (error) {
-    return res
-      .status(sc.INTERNAL_SERVER_ERROR)
-      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+    }
+  } catch (error: any) {
+    //가족 다 찼을 때
+    if (error.message === 'full family')
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.FULL_FAMILY_MEMBER));
+
+    //잘못된 코드 입력했을 때
+    if (error.message === 'no family')
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_FAMILY_CODE));
   }
+  return res
+    .status(sc.INTERNAL_SERVER_ERROR)
+    .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
 };
 
 const familyController = {
