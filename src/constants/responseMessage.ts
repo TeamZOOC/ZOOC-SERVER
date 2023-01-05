@@ -38,4 +38,5 @@ export default {
   ENROLL_USER_TO_FAMILY_SUCCESS: '가족에 유저 등록 성공',
   BAD_FAMILY_CODE: '잘못된 가족 코드 입력',
   FULL_FAMILY_MEMBER: '가족 인원이 다 찼습니다',
+  ALREADY_FAMILY: '이미 가족입니다',
 };
