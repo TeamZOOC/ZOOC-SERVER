@@ -35,7 +35,9 @@ const getUserFamily = async (req: Request, res: Response) => {
   try {
     const userId: number = req.body.userId;
     const data: FamilyDto[] = await familyService.getUserFamily(userId);
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_USER_FAMILY, data));
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.GET_USER_FAMILY_SUCCESS, data));
   } catch (error) {
     console.error(error);
     return res

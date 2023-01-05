@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { familyController } from '../controller';
+import auth from '../middleware/auth';
 import { upload } from '../middleware';
 import auth from '../middleware/auth';
 const router: Router = Router();
