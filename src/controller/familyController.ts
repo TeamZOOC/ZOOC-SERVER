@@ -75,10 +75,28 @@ const getFamilyCode = async (req: Request, res: Response) => {
   }
 };
 
+const enrollUsertoFamily = async (req: Request, res: Response) => {
+  const { userId, code } = req.body;
+  console.log(userId, code);
+  try {
+    const data = await familyService.enrollUsertoFamily(userId, code);
+    if (!data) return null;
+    else
+      return res
+        .status(sc.CREATED)
+        .send(success(sc.CREATED, rm.ENROLL_USER_TO_FAMILY_SUCCESS, data));
+  } catch (error) {
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const familyController = {
   getMypage,
   getFamilyCode,
   getUserFamily,
   createPet,
+  enrollUsertoFamily,
 };
 export default familyController;
