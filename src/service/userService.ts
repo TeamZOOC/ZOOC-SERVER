@@ -1,3 +1,4 @@
+import { UserDto } from './../interface/user/UserDto';
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 import jwtHandler from '../modules/jwtHandler';
@@ -22,7 +23,7 @@ const signUp = async (kakaoId: bigint) => {
 
   await prisma.user.update({
     where: {
-      id: user.id,
+      id: userId,
     },
     data: {
       jwt_token: jwtToken,
@@ -49,20 +50,49 @@ const signInKakao = async (kakaoToken: string | undefined) => {
     },
   });
 
+  //유저 없으면 회원가입
   if (!user) {
     const jwtToken = await signUp(kakaoId);
     return jwtToken;
   }
+  //유저 있으면 jwt 토큰 생성
   const userId = user.id;
   const payload = {
     userId,
   };
   const jwtToken = jwtHandler.sign(payload);
+
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      jwt_token: jwtToken,
+    },
+  });
+
   return jwtToken;
+};
+
+const getUser = async (userId: number): Promise<UserDto> => {
+  const data = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      nick_name: true,
+      photo: true,
+    },
+  });
+
+  if (data) return data;
+  throw new Error('no user');
 };
 
 const userService = {
   signInKakao,
+  getUser,
 };
 
 export default userService;
