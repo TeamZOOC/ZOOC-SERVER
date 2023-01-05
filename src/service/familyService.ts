@@ -123,19 +123,27 @@ const searchFamilyByCode = async (code: string) => {
 const enrollUsertoFamily = async (userId: number, code: string) => {
   // 입력한 가족 코드에 해당하는 가족 정보 불러오기
   const family = await searchFamilyByCode(code);
-  if (family) {
-    //코드에 해당하는 가족이 있으면 유저 등록
-    const data = await prisma.user_family.create({
-      data: {
-        user_id: userId,
-        family_id: family.id,
-      },
-    });
 
-    return data;
+  // 코드에 해당하는 가족이 있으면?
+
+  if (family) {
+    // 명 수 세기
+    const familyMembers = await getFamilyMembers(family.id);
+    // 8명 미만이면 유저 등록
+    if (familyMembers.length < 8) {
+      // 유저 등록
+      const data = await prisma.user_family.create({
+        data: {
+          user_id: userId,
+          family_id: family.id,
+        },
+      });
+      return data;
+    }
+    throw new Error('full family');
   }
   //코드에 해당하는 가족 없으면 null 반환
-  return null;
+  throw new Error('no family');
 };
 
 const familyService = {
