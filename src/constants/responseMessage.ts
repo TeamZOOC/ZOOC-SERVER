@@ -34,4 +34,5 @@ export default {
   GET_USER_FAMILY: '유저의 가족 정보 조회 성공',
   GET_MYPAGE_SUCCESS: '마이페이지 조회 성공',
   GET_FAMILY_CODE_SUCCESS: '초대 링크 조회 성공',
+  CREATE_PET_SUCCESS: '반려동물 등록 성공',
 };
