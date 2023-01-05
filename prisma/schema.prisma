@@ -73,18 +73,18 @@ model record_pet {
 }
 
 model user {
-  id           Int           @id @unique @default(autoincrement())
-  photo        String?       @db.VarChar(500)
-  nick_name    String        @db.VarChar(10)
-  access_token String        @db.VarChar(200)
-  fcm_token    String        @db.VarChar(200)
-  created_at   DateTime      @default(now()) @db.Timestamp(6)
-  updated_at   DateTime      @default(now()) @db.Timestamp(6)
-  social_id    BigInt        @unique
-  provider     String        @default("kakao") @db.VarChar(100)
-  comment      comment[]
-  record       record[]
-  user_family  user_family[]
+  id          Int           @id @unique @default(autoincrement())
+  photo       String?       @db.VarChar(500)
+  nick_name   String        @db.VarChar(10)
+  jwt_token   String        @db.VarChar(200)
+  fcm_token   String        @db.VarChar(200)
+  created_at  DateTime      @default(now()) @db.Timestamp(6)
+  updated_at  DateTime      @default(now()) @db.Timestamp(6)
+  social_id   BigInt        @unique
+  provider    String        @default("kakao") @db.VarChar(100)
+  comment     comment[]
+  record      record[]
+  user_family user_family[]
 }
 
 model user_family {
