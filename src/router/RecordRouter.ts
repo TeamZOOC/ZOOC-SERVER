@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import RecordController from '../controller/RecordController';
 
 const router: Router = Router();
 

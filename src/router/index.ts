@@ -4,7 +4,7 @@ import familyRouter from './familyRouter';
 import RecordRouter from './RecordRouter';
 const router: Router = Router();
 
-router.use('/auth', userRouter);
+router.use('/user', userRouter);
 router.use('/family', familyRouter);
 router.use('/record', RecordRouter);
 
