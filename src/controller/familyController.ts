@@ -104,6 +104,12 @@ const enrollUsertoFamily = async (req: Request, res: Response) => {
       return res
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_FAMILY_CODE));
+
+    //이미 등록된 가족일 때
+    if (error.message === 'already family')
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.ALREADY_FAMILY));
   }
   return res
     .status(sc.INTERNAL_SERVER_ERROR)
