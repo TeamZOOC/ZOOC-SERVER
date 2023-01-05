@@ -20,7 +20,9 @@ const createPet = async (req: Request, res: Response) => {
       +familyId
     );
 
-    return res.status(sc.OK).send(success(sc.OK, rm.CREATE_PET_SUCCESS, data));
+    return res
+      .status(sc.CREATED)
+      .send(success(sc.CREATED, rm.CREATE_PET_SUCCESS, data));
   } catch (error) {
     console.log(error);
     return res
