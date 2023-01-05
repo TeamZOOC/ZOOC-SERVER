@@ -33,7 +33,8 @@ const createPet = async (req: Request, res: Response) => {
 
 const getUserFamily = async (req: Request, res: Response) => {
   try {
-    const data: FamilyDto[] = await familyService.getUserFamily(1);
+    const userId: number = req.body.userId;
+    const data: FamilyDto[] = await familyService.getUserFamily(userId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_USER_FAMILY, data));
   } catch (error) {
     console.error(error);
