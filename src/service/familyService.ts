@@ -108,11 +108,42 @@ const createPet = async (
   return data;
 };
 
+//~ 입력한 가족 코드에 해당하는 가족 정보 불러오기
+const searchFamilyByCode = async (code: string) => {
+  const family: FamilyDto | null = await prisma.family.findUnique({
+    where: {
+      code: code,
+    },
+  });
+
+  return family;
+};
+
+//~ 가족에 유저 등록하기
+const enrollUsertoFamily = async (userId: number, code: string) => {
+  // 입력한 가족 코드에 해당하는 가족 정보 불러오기
+  const family = await searchFamilyByCode(code);
+  if (family) {
+    //코드에 해당하는 가족이 있으면 유저 등록
+    const data = await prisma.user_family.create({
+      data: {
+        user_id: userId,
+        family_id: family.id,
+      },
+    });
+
+    return data;
+  }
+  //코드에 해당하는 가족 없으면 null 반환
+  return null;
+};
+
 const familyService = {
   getUserFamily,
   getMypage,
   getFamilyById,
   createPet,
+  enrollUsertoFamily,
 };
 
 export default familyService;
