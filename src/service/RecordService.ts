@@ -7,7 +7,7 @@ const getMission = async (
   userId: number,
   familyId: number
 ): Promise<MissionDto[]> => {
-  //미션테이블 돌면서 미션 id들 가져오기
+  //미션 id들 가져오기
   const missionIds = await prisma.mission.findMany({
     select: {
       id: true,
