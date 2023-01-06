@@ -74,6 +74,7 @@ const signInKakao = async (kakaoToken: string | undefined) => {
   return jwtToken;
 };
 
+//~ 유저 정보 불러오기
 const getUser = async (userId: number): Promise<UserDto> => {
   const data = await prisma.user.findUnique({
     where: {
@@ -90,9 +91,31 @@ const getUser = async (userId: number): Promise<UserDto> => {
   throw new Error('no user');
 };
 
+//~ 사용자 프로필 사진 & 닉네임 수정하기
+const patchUserPhotoAndNickName = async (
+  userId: number,
+  photo: string,
+  nickName: string
+) => {
+  // 프로필 사진만 변경
+  const user = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      photo: photo,
+      nick_name: nickName,
+    },
+  });
+
+  return user;
+  // 프로필 사진 및 닉네임 변경
+  // 닉네임만 변경
+};
 const userService = {
   signInKakao,
   getUser,
+  patchUserPhotoAndNickName,
 };
 
 export default userService;
