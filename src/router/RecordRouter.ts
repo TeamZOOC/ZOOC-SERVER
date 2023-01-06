@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import RecordController from '../controller/RecordController';
+import { recordController } from '../controller';
 
 const router: Router = Router();
 
 //? GET record/mission
-router.get('/mission', RecordController.getMission);
+router.get('/mission/:familyId', recordController.getMission);
 
 export default router;

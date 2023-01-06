@@ -3,14 +3,19 @@ import _ from 'lodash';
 import { MissionDto } from '../interface/record/MissionDto';
 const prisma = new PrismaClient();
 
-const getMission = async (userId: number): Promise<MissionDto[]> => {
+const getMission = async (
+  userId: number,
+  familyId: number
+): Promise<MissionDto[]> => {
   //미션테이블 돌면서 미션 id들 가져오기 [1,2,3,4,5]
   const missionIds = await prisma.mission.findMany({
     select: {
       id: true,
     },
   });
+
   const missionIdList: number[] = [];
+
   missionIds.map((missionId) => {
     missionIdList.push(missionId.id);
   });
@@ -19,6 +24,7 @@ const getMission = async (userId: number): Promise<MissionDto[]> => {
   const completedMissionIds = await prisma.record.findMany({
     where: {
       writer: userId,
+      family_id: familyId,
       NOT: { mission_id: null },
     },
     select: {
@@ -57,8 +63,8 @@ const getMission = async (userId: number): Promise<MissionDto[]> => {
   return unCompletedMissionList;
 };
 
-const RecordService = {
+const recordService = {
   getMission,
 };
 
-export default RecordService;
+export default recordService;
