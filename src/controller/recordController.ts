@@ -23,7 +23,26 @@ const getMission = async (req: Request, res: Response) => {
   }
 };
 
+const getAllPet = async (req: Request, res: Response) => {
+  try {
+    const familyId = req.params.familyId;
+    if (!familyId)
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+
+    const data = await recordService.getAllPet(+familyId);
+    return res.status(sc.OK).send(success(sc.OK, rm.GET_ALL_PET_SUCCESS, data));
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const recordController = {
   getMission,
+  getAllPet,
 };
 export default recordController;

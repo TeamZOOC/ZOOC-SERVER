@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import _ from 'lodash';
+import { PetDto } from '../interface/family/PetDto';
 import { MissionDto } from '../interface/record/MissionDto';
+import familyService from './familyService';
 const prisma = new PrismaClient();
 
 const getMission = async (
@@ -63,8 +65,13 @@ const getMission = async (
   return unCompletedMissionList;
 };
 
+const getAllPet = async (familyId: number): Promise<PetDto[]> => {
+  return familyService.getFamilyPets(familyId);
+};
+
 const recordService = {
   getMission,
+  getAllPet,
 };
 
 export default recordService;
