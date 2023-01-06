@@ -9,4 +9,7 @@ router.get('/mission/:familyId', recordController.getMission);
 //? GET record/pet/{familyId}
 router.get('/pet/:familyId', recordController.getAllPet);
 
+//? POST record/{familyId}
+router.post('/:familyId', recordController.createRecord);
+
 export default router;
