@@ -157,6 +157,7 @@ const enrollUsertoFamily = async (userId: number, code: string) => {
 const familyService = {
   getUserFamily,
   getMypage,
+  getFamilyPets,
   getFamilyById,
   createPet,
   enrollUsertoFamily,
