@@ -31,7 +31,7 @@ export default {
   INTERNAL_SERVER_ERROR: '서버 내 오류',
 
   // 마이페이지
-  GET_USER_FAMILY: '유저의 가족 정보 조회 성공',
+  GET_USER_FAMILY_SUCCESS: '유저의 가족 정보 조회 성공',
   GET_MYPAGE_SUCCESS: '마이페이지 조회 성공',
   GET_FAMILY_CODE_SUCCESS: '초대 링크 조회 성공',
 
@@ -46,4 +46,10 @@ export default {
 
   //펫
   GET_ALL_PET_SUCCESS: '펫 전체 조회 성공',
+  CREATE_PET_SUCCESS: '반려동물 등록 성공',
+  ENROLL_USER_TO_FAMILY_SUCCESS: '가족에 유저 등록 성공',
+  BAD_FAMILY_CODE: '잘못된 가족 코드 입력',
+  FULL_FAMILY_MEMBER: '가족 인원이 다 찼습니다',
+  ALREADY_FAMILY: '이미 가족입니다',
+
 };

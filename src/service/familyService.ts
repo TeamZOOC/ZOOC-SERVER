@@ -87,10 +87,79 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
   return data;
 };
 
+//~ 가족에 반려동물 등록하기
+const createPet = async (
+  name: string,
+  photo: string,
+  familyId: number
+): Promise<PetDto> => {
+  const data: PetDto = await prisma.pet.create({
+    data: {
+      name: name,
+      photo: photo,
+      family: {
+        connect: {
+          id: familyId,
+        },
+      },
+    },
+  });
+
+  return data;
+};
+
+//~ 입력한 가족 코드에 해당하는 가족 정보 불러오기
+const searchFamilyByCode = async (code: string) => {
+  const family: FamilyDto | null = await prisma.family.findUnique({
+    where: {
+      code: code,
+    },
+  });
+
+  return family;
+};
+
+//~ 가족에 유저 등록하기
+const enrollUsertoFamily = async (userId: number, code: string) => {
+  // 입력한 가족 코드에 해당하는 가족 정보 불러오기
+  const family = await searchFamilyByCode(code);
+
+  //코드에 해당하는 가족 없으면 throw error
+  if (!family) throw new Error('no family');
+
+  // 해당 코드를 갖는 가족 정보가 있으면?
+  // 이미 등록 됐으면 throw error
+  const user_family = await prisma.user_family.findFirst({
+    where: {
+      user_id: userId,
+      family_id: family.id,
+    },
+  });
+  if (user_family) throw new Error('already family');
+
+  // 명 수 세기
+  const familyMembers = await getFamilyMembers(family.id);
+  // 8명 미만이면 유저 등록
+  if (familyMembers.length < 8) {
+    // 유저 등록
+    const data = await prisma.user_family.create({
+      data: {
+        user_id: userId,
+        family_id: family.id,
+      },
+    });
+    return data;
+  }
+  //유저 8명 이상이면 throw error
+  throw new Error('full family');
+};
+
 const familyService = {
   getUserFamily,
   getMypage,
   getFamilyById,
+  createPet,
+  enrollUsertoFamily,
 };
 
 export default familyService;
