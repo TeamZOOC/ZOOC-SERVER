@@ -39,4 +39,7 @@ export default {
   BAD_FAMILY_CODE: '잘못된 가족 코드 입력',
   FULL_FAMILY_MEMBER: '가족 인원이 다 찼습니다',
   ALREADY_FAMILY: '이미 가족입니다',
+
+  // 유저
+  UPDATE_USER_PROFILE_SUCCESS: '유저 프로필 수정 성공',
 };
