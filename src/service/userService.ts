@@ -106,6 +106,11 @@ const patchUserPhotoAndNickName = async (
       photo: photo,
       nick_name: nickName,
     },
+    select: {
+      id: true,
+      nick_name: true,
+      photo: true,
+    },
   });
 
   return user;
