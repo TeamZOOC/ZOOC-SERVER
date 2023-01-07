@@ -15,8 +15,7 @@ const signInKakao = async (req: Request, res: Response) => {
 
 const patchUserProfile = async (req: Request, res: Response) => {
   const { userId, nickName } = req.body;
-  const is_photo = req.query.photo;
-
+  const is_photo = req.query.photo === 'true' ? true : false;
   try {
     if (is_photo) {
       if (!req.file) {
