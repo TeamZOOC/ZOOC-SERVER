@@ -94,7 +94,7 @@ const getUser = async (userId: number): Promise<UserDto> => {
 //~ 사용자 프로필 사진 & 닉네임 수정하기
 const patchUserPhotoAndNickName = async (
   userId: number,
-  photo: string,
+  photo: string | null,
   nickName: string
 ) => {
   // 프로필 사진만 변경
