@@ -42,6 +42,16 @@ const patchUserProfile = async (req: Request, res: Response) => {
         .status(200)
         .send(success(sc.OK, rm.UPDATE_USER_PROFILE_SUCCESS, data));
     }
+
+    const data = await userService.patchUserPhotoAndNickName(
+      +userId,
+      null,
+      nickName
+    );
+
+    return res
+      .status(200)
+      .send(success(sc.OK, rm.UPDATE_USER_PROFILE_SUCCESS, data));
   } catch (error) {
     console.error(error);
     return res
