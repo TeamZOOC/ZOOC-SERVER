@@ -43,6 +43,7 @@ const patchUserProfile = async (req: Request, res: Response) => {
         .send(success(sc.OK, rm.UPDATE_USER_PROFILE_SUCCESS, data));
     }
 
+    // 사진 삭제 & 별명 수정
     const data = await userService.patchUserPhotoAndNickName(
       +userId,
       null,
@@ -50,7 +51,7 @@ const patchUserProfile = async (req: Request, res: Response) => {
     );
 
     return res
-      .status(200)
+      .status(sc.OK)
       .send(success(sc.OK, rm.UPDATE_USER_PROFILE_SUCCESS, data));
   } catch (error) {
     console.error(error);
