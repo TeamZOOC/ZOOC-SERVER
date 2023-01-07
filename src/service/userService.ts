@@ -114,13 +114,32 @@ const patchUserPhotoAndNickName = async (
   });
 
   return user;
-  // 프로필 사진 및 닉네임 변경
-  // 닉네임만 변경
 };
+
+//~ 사용자 프로필 닉네임 수정하기
+const patchUserNickName = async (userId: number, nickName: string) => {
+  const user = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      nick_name: nickName,
+    },
+    select: {
+      id: true,
+      nick_name: true,
+      photo: true,
+    },
+  });
+
+  return user;
+};
+
 const userService = {
   signInKakao,
   getUser,
   patchUserPhotoAndNickName,
+  patchUserNickName,
 };
 
 export default userService;
