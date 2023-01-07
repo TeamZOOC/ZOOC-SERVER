@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import _ from 'lodash';
 import { PetDto } from '../interface/family/PetDto';
 import { MissionDto } from '../interface/record/MissionDto';
+import { RecordCreateDto } from '../interface/record/RecordCreateDto';
 import familyService from './familyService';
 const prisma = new PrismaClient();
 
@@ -69,9 +70,26 @@ const getAllPet = async (familyId: number): Promise<PetDto[]> => {
   return familyService.getFamilyPets(familyId);
 };
 
+const createRecord = async (
+  userId: number,
+  familyId: number,
+  recordCreateDto: RecordCreateDto
+): Promise<void> => {
+  await prisma.record.create({
+    data: {
+      writer: userId,
+      family_id: familyId,
+      content: recordCreateDto.content,
+      photo: recordCreateDto.photo,
+      mission_id: recordCreateDto.missionId,
+    },
+  });
+};
+
 const recordService = {
   getMission,
   getAllPet,
+  createRecord,
 };
 
 export default recordService;

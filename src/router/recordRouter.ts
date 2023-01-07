@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { recordController } from '../controller';
+import { upload } from '../middleware';
 
 const router: Router = Router();
 
@@ -10,6 +11,6 @@ router.get('/mission/:familyId', recordController.getMission);
 router.get('/pet/:familyId', recordController.getAllPet);
 
 //? POST record/{familyId}
-router.post('/:familyId', recordController.createRecord);
+router.post('/:familyId', upload.single('file'), recordController.createRecord);
 
 export default router;

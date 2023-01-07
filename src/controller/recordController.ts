@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
+import { RecordCreateDto } from '../interface/record/RecordCreateDto';
 import recordService from '../service/recordService';
 
 //? 완료하지 않은 미션 전체 조회
@@ -54,10 +55,11 @@ const createRecord = async (req: Request, res: Response) => {
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
-    const data = await recordService.createRecord(1, +familyId);
-    return res
-      .status(sc.OK)
-      .send(success(sc.OK, rm.CREATE_RECORD_SUCCESS, data));
+    const recordCreateDto: RecordCreateDto = req.body;
+
+    await recordService.createRecord(1, +familyId, recordCreateDto);
+
+    return res.status(sc.OK).send(success(sc.OK, rm.CREATE_RECORD_SUCCESS));
   } catch (error) {
     console.error(error);
     return res
