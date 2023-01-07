@@ -18,8 +18,17 @@ const patchUserProfile = async (req: Request, res: Response) => {
   const is_photo = req.query.photo;
 
   try {
-    // 사진 존재할 시 사진 & 닉네임 수정
     if (is_photo) {
+      if (!req.file) {
+        // 별명만 수정
+        const data = await userService.patchUserNickName(+userId, nickName);
+
+        return res
+          .status(sc.OK)
+          .send(success(sc.OK, rm.UPDATE_USER_PROFILE_SUCCESS, data));
+      }
+
+      // 사진 & 별명 수정
       const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
       const { location } = image;
 
@@ -39,10 +48,6 @@ const patchUserProfile = async (req: Request, res: Response) => {
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
-
-  // 사진 존재하지 않을 시
-
-  // 닉네임 수정 (photo false)
 };
 
 const userController = {
