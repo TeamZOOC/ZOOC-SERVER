@@ -23,7 +23,7 @@ const patchUserProfile = async (req: Request, res: Response) => {
       const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
       const { location } = image;
 
-      const data = userService.patchUserPhotoAndNickName(
+      const data = await userService.patchUserPhotoAndNickName(
         +userId,
         location,
         nickName
@@ -34,6 +34,7 @@ const patchUserProfile = async (req: Request, res: Response) => {
         .send(success(sc.OK, rm.UPDATE_USER_PROFILE_SUCCESS, data));
     }
   } catch (error) {
+    console.error(error);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
