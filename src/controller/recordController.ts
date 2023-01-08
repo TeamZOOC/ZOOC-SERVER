@@ -52,31 +52,44 @@ const createRecord = async (req: Request, res: Response) => {
     const { content, pet } = req.body;
     const { familyId } = req.params;
     const { missionId } = req.query;
+    let mission: number | undefined;
 
     if (!familyId)
       return res
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
-    if (!missionId) {
-      await recordService.createRecord(
-        1,
-        +familyId,
-        location,
-        content,
-        pet,
-        undefined
-      );
-    } else {
-      await recordService.createRecord(
-        1,
-        +familyId,
-        location,
-        content,
-        pet,
-        +missionId
-      );
-    }
+    if (missionId) mission = Number(missionId);
+    else mission = undefined;
+
+    // if (!missionId) {
+    //   await recordService.createRecord(
+    //     1,
+    //     +familyId,
+    //     location,
+    //     content,
+    //     pet,
+    //     undefined
+    //   );
+    // } else {
+    //   await recordService.createRecord(
+    //     1,
+    //     +familyId,
+    //     location,
+    //     content,
+    //     pet,
+    //     +missionId
+    //   );
+    // }
+    await recordService.createRecord(
+      1,
+      +familyId,
+      location,
+      content,
+      pet,
+      mission
+    );
+
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_RECORD_SUCCESS));
   } catch (error) {
     console.error(error);

@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import _ from 'lodash';
+import _, { inRange } from 'lodash';
 import { PetDto } from '../interface/family/PetDto';
 import { MissionDto } from '../interface/record/MissionDto';
 import familyService from './familyService';
@@ -77,36 +77,69 @@ const createRecord = async (
   pet: number[],
   missionId: number | undefined
 ): Promise<void> => {
-  const record = await prisma.record.create({
-    data: {
-      content: content,
-      photo: location,
-      user: {
-        connect: {
-          id: userId,
-        },
-      },
-      mission: {
-        connect: {
-          id: missionId,
-        },
-      },
-      family: {
-        connect: {
-          id: familyId,
-        },
-      },
-    },
-  });
+  let recordId: number;
 
-  pet.map(async (petId) => {
+  if (missionId === undefined) {
+    const record = await prisma.record.create({
+      data: {
+        content: content,
+        photo: location,
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        family: {
+          connect: {
+            id: familyId,
+          },
+        },
+      },
+    });
+    recordId = record.id;
+  } else {
+    const missionRecord = await prisma.record.findFirst({
+      where: {
+        mission_id: missionId,
+      },
+    });
+
+    if (missionRecord) throw new Error('same mission record exist');
+
+    const record = await prisma.record.create({
+      data: {
+        content: content,
+        photo: location,
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        mission: {
+          connect: {
+            id: missionId,
+          },
+        },
+        family: {
+          connect: {
+            id: familyId,
+          },
+        },
+      },
+    });
+
+    recordId = record.id;
+  }
+
+  const promises = pet.map(async (petId) => {
     await prisma.record_pet.create({
       data: {
-        record_id: record.id,
+        record_id: recordId,
         pet_id: Number(petId),
       },
     });
   });
+  await Promise.all(promises);
 };
 
 const recordService = {
