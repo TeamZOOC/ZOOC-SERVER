@@ -3,6 +3,7 @@ import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 import recordService from '../service/recordService';
 
+//* 수행하지 않은 미션 조회
 const getMission = async (req: Request, res: Response) => {
   try {
     //const userId: number = req.body.userId;
@@ -23,6 +24,7 @@ const getMission = async (req: Request, res: Response) => {
   }
 };
 
+//* 모든 펫 조회
 const getAllPet = async (req: Request, res: Response) => {
   try {
     const familyId = req.params.familyId;
@@ -41,8 +43,17 @@ const getAllPet = async (req: Request, res: Response) => {
   }
 };
 
+//* 기록 삭제
+const deleteRecord = async (req: Request, res: Response) => {
+  const { recordId } = req.params;
+
+  await recordService.deleteRecord(+recordId);
+  return res.status(sc.OK).send(success(sc.OK, rm.DELETE_RECORD_SUCCESS));
+};
+
 const recordController = {
   getMission,
   getAllPet,
+  deleteRecord,
 };
 export default recordController;

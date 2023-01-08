@@ -69,9 +69,18 @@ const getAllPet = async (familyId: number): Promise<PetDto[]> => {
   return familyService.getFamilyPets(familyId);
 };
 
+const deleteRecord = async (recordId: number): Promise<void> => {
+  await prisma.record.delete({
+    where: {
+      id: recordId,
+    },
+  });
+};
+
 const recordService = {
   getMission,
   getAllPet,
+  deleteRecord,
 };
 
 export default recordService;
