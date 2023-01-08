@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
-import { RecordCreateDto } from '../interface/record/RecordCreateDto';
 import recordService from '../service/recordService';
 
 //? 완료하지 않은 미션 전체 조회
@@ -48,17 +47,36 @@ const getAllPet = async (req: Request, res: Response) => {
 const createRecord = async (req: Request, res: Response) => {
   try {
     //const userId: number = req.body.userId;
+    const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
+    const { location } = image;
+    const { content, pet } = req.body;
+    const { familyId } = req.params;
+    const { missionId } = req.query;
 
-    const familyId = req.params.familyId;
     if (!familyId)
       return res
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
-    const recordCreateDto: RecordCreateDto = req.body;
-
-    await recordService.createRecord(1, +familyId, recordCreateDto);
-
+    if (!missionId) {
+      await recordService.createRecord(
+        1,
+        +familyId,
+        location,
+        content,
+        pet,
+        undefined
+      );
+    } else {
+      await recordService.createRecord(
+        1,
+        +familyId,
+        location,
+        content,
+        pet,
+        +missionId
+      );
+    }
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_RECORD_SUCCESS));
   } catch (error) {
     console.error(error);

@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import _ from 'lodash';
 import { PetDto } from '../interface/family/PetDto';
 import { MissionDto } from '../interface/record/MissionDto';
-import { RecordCreateDto } from '../interface/record/RecordCreateDto';
 import familyService from './familyService';
 const prisma = new PrismaClient();
 
@@ -73,16 +72,40 @@ const getAllPet = async (familyId: number): Promise<PetDto[]> => {
 const createRecord = async (
   userId: number,
   familyId: number,
-  recordCreateDto: RecordCreateDto
+  location: string,
+  content: string,
+  pet: number[],
+  missionId: number | undefined
 ): Promise<void> => {
-  await prisma.record.create({
+  const record = await prisma.record.create({
     data: {
-      writer: userId,
-      family_id: familyId,
-      content: recordCreateDto.content,
-      photo: recordCreateDto.photo,
-      mission_id: recordCreateDto.missionId,
+      content: content,
+      photo: location,
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
+      mission: {
+        connect: {
+          id: missionId,
+        },
+      },
+      family: {
+        connect: {
+          id: familyId,
+        },
+      },
     },
+  });
+
+  pet.map(async (petId) => {
+    await prisma.record_pet.create({
+      data: {
+        record_id: record.id,
+        pet_id: Number(petId),
+      },
+    });
   });
 };
 

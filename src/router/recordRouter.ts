@@ -10,7 +10,7 @@ router.get('/mission/:familyId', recordController.getMission);
 //? GET record/pet/{familyId}
 router.get('/pet/:familyId', recordController.getAllPet);
 
-//? POST record/{familyId}
+//? POST record/{familyId}?missionId=
 router.post('/:familyId', upload.single('file'), recordController.createRecord);
 
 export default router;
