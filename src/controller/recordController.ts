@@ -43,7 +43,7 @@ const getAllPet = async (req: Request, res: Response) => {
   }
 };
 
-//* 기록 삭제
+//* 기록 삭제하기
 const deleteRecord = async (req: Request, res: Response) => {
   const { recordId } = req.params;
 
