@@ -45,7 +45,7 @@ const createEmojiComment = async (req: Request, res: Response) => {
 
     return res
       .status(sc.CREATED)
-      .send(success(sc.CREATED, rm.CREATE_COMMENT_SUCCESS, data));
+      .send(success(sc.CREATED, rm.CREATE_EMOJI_COMMENT_SUCCESS, data));
   } catch (error) {
     console.log(error);
     return res
