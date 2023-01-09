@@ -53,7 +53,8 @@ export default {
   ALREADY_FAMILY: '이미 가족입니다',
 
   //댓글
-  CREATE_COMMENT_SUCCESS: '댓글 생성 성공',
+  CREATE_COMMENT_SUCCESS: '일반 댓글 생성 성공',
+  CREATE_EMOJI_COMMENT_SUCCESS: '이모지 댓글 생성 성공',
   DELETE_COMMENT_SUCCESS: '댓글 삭제 성공',
 
   // 유저
