@@ -6,6 +6,9 @@ const router: Router = Router();
 //? POST comment/{recordId}
 router.post('/:recordId', commentController.createComment);
 
+//? POST comment/emoji/{recordId}
+router.post('/emoji/:recordId', commentController.createEmojiComment);
+
 //? DELETE comment/{commentId}
 router.delete('/:commentId', commentController.deleteComment);
 

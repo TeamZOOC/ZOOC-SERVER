@@ -9,7 +9,7 @@ datasource db {
 
 model comment {
   id         Int      @id @unique @default(autoincrement())
-  content    String   @db.VarChar(34)
+  content    String?  @db.VarChar(34)
   writer     Int
   record_id  Int
   created_at DateTime @default(now()) @db.Timestamp(6)
