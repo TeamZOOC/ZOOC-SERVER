@@ -55,4 +55,7 @@ export default {
   //댓글
   CREATE_COMMENT_SUCCESS: '댓글 생성 성공',
   DELETE_COMMENT_SUCCESS: '댓글 삭제 성공',
+
+  // 유저
+  UPDATE_USER_PROFILE_SUCCESS: '유저 프로필 수정 성공',
 };
