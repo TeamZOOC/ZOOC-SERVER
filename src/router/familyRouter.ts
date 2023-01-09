@@ -5,7 +5,7 @@ import { upload } from '../middleware';
 const router: Router = Router();
 
 //? GET family
-router.get('/', auth, familyController.getUserFamily);
+router.get('/', familyController.getUserFamily);
 
 //? GET family/mypage
 router.get('/mypage', familyController.getMypage);
