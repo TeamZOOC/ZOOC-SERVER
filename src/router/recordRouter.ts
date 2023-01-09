@@ -16,4 +16,10 @@ router.delete('/:recordId', recordController.deleteRecord);
 //? POST record/{familyId}?missionId=
 router.post('/:familyId', upload.single('file'), recordController.createRecord);
 
+//? GET record/:recordId
+router.get('/:recordId', recordController.getRecord);
+
+//? GET record/:family
+//router.get('/:familyId', recordController.getAllRecord);
+
 export default router;
