@@ -4,6 +4,7 @@ import { fail, success } from '../constants/response';
 import { CommentResponseDto } from '../interface/comment/CommentResponseDto';
 import commentService from '../service/commentService';
 
+//? 일반 댓글 작성하기
 const createComment = async (req: Request, res: Response) => {
   try {
     const userId: number = req.body.userId;
@@ -28,7 +29,16 @@ const createComment = async (req: Request, res: Response) => {
   }
 };
 
+//? 댓글 삭제하기
+const deleteComment = async (req: Request, res: Response) => {
+  const { commentId } = req.params;
+
+  await commentService.deleteComment(+commentId);
+  return res.status(sc.OK).send(success(sc.OK, rm.DELETE_COMMENT_SUCCESS));
+};
+
 const commentController = {
   createComment,
+  deleteComment,
 };
 export default commentController;
