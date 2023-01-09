@@ -1,3 +1,4 @@
+import { UserDto } from './../interface/user/UserDto';
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 import jwtHandler from '../modules/jwtHandler';
@@ -22,7 +23,7 @@ const signUp = async (kakaoId: bigint) => {
 
   await prisma.user.update({
     where: {
-      id: user.id,
+      id: userId,
     },
     data: {
       jwt_token: jwtToken,
@@ -49,20 +50,96 @@ const signInKakao = async (kakaoToken: string | undefined) => {
     },
   });
 
+  //유저 없으면 회원가입
   if (!user) {
     const jwtToken = await signUp(kakaoId);
     return jwtToken;
   }
+  //유저 있으면 jwt 토큰 생성
   const userId = user.id;
   const payload = {
     userId,
   };
   const jwtToken = jwtHandler.sign(payload);
+
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      jwt_token: jwtToken,
+    },
+  });
+
   return jwtToken;
+};
+
+//~ 유저 정보 불러오기
+const getUser = async (userId: number): Promise<UserDto> => {
+  const data = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      nick_name: true,
+      photo: true,
+    },
+  });
+
+  if (data) return data;
+  throw new Error('no user');
+};
+
+//~ 사용자 프로필 사진 & 닉네임 수정하기
+const patchUserPhotoAndNickName = async (
+  userId: number,
+  photo: string | null,
+  nickName: string
+) => {
+  // 프로필 사진만 변경
+  const user = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      photo: photo,
+      nick_name: nickName,
+    },
+    select: {
+      id: true,
+      nick_name: true,
+      photo: true,
+    },
+  });
+
+  return user;
+};
+
+//~ 사용자 프로필 닉네임 수정하기
+const patchUserNickName = async (userId: number, nickName: string) => {
+  const user = await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      nick_name: nickName,
+    },
+    select: {
+      id: true,
+      nick_name: true,
+      photo: true,
+    },
+  });
+
+  return user;
 };
 
 const userService = {
   signInKakao,
+  getUser,
+  patchUserPhotoAndNickName,
+  patchUserNickName,
 };
 
 export default userService;
