@@ -12,7 +12,7 @@ const createComment = async (req: Request, res: Response) => {
     const { content } = req.body;
 
     const data: CommentResponseDto[] = await commentService.createComment(
-      userId,
+      1,
       +recordId,
       content
     );
