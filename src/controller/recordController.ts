@@ -43,6 +43,14 @@ const getAllPet = async (req: Request, res: Response) => {
   }
 };
 
+//? 기록 삭제하기
+const deleteRecord = async (req: Request, res: Response) => {
+  const { recordId } = req.params;
+
+  await recordService.deleteRecord(+recordId);
+  return res.status(sc.OK).send(success(sc.OK, rm.DELETE_RECORD_SUCCESS));
+};
+
 //? 기록 작성하기
 const createRecord = async (req: Request, res: Response) => {
   try {
@@ -62,25 +70,6 @@ const createRecord = async (req: Request, res: Response) => {
     if (missionId) mission = Number(missionId);
     else mission = undefined;
 
-    // if (!missionId) {
-    //   await recordService.createRecord(
-    //     1,
-    //     +familyId,
-    //     location,
-    //     content,
-    //     pet,
-    //     undefined
-    //   );
-    // } else {
-    //   await recordService.createRecord(
-    //     1,
-    //     +familyId,
-    //     location,
-    //     content,
-    //     pet,
-    //     +missionId
-    //   );
-    // }
     await recordService.createRecord(
       1,
       +familyId,
@@ -89,7 +78,6 @@ const createRecord = async (req: Request, res: Response) => {
       pet,
       mission
     );
-
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_RECORD_SUCCESS));
   } catch (error) {
     console.error(error);
@@ -102,6 +90,7 @@ const createRecord = async (req: Request, res: Response) => {
 const recordController = {
   getMission,
   getAllPet,
+  deleteRecord,
   createRecord,
 };
 export default recordController;
