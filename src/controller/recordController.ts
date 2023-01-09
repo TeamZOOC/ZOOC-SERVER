@@ -87,10 +87,28 @@ const createRecord = async (req: Request, res: Response) => {
   }
 };
 
+//? 기록 상세 조회
+const getRecord = async (req: Request, res: Response) => {
+  try {
+    const recordId = req.params.recordId;
+    if (!recordId)
+      return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
+
+    const data = await recordService.getRecord(+recordId);
+    return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const recordController = {
   getMission,
   getAllPet,
   deleteRecord,
   createRecord,
+  getRecord,
 };
 export default recordController;
