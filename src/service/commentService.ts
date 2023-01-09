@@ -58,8 +58,17 @@ const createComment = async (
   return recentComments;
 };
 
+const deleteComment = async (commentId: number): Promise<void> => {
+  await prisma.comment.delete({
+    where: {
+      id: commentId,
+    },
+  });
+};
+
 const commentService = {
   createComment,
+  deleteComment,
 };
 
 export default commentService;
