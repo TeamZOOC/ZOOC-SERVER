@@ -1,14 +1,51 @@
-import { CommentResponseDto } from './../interface/comment/CommentResponseDto';
 import { PrismaClient } from '@prisma/client';
+import dayjs from 'dayjs';
+import { CommentDto } from '../interface/comment/CommentDto';
 
 const prisma = new PrismaClient();
+
+const getAllComment = async (recordId: number): Promise<CommentDto[]> => {
+  const comments = await prisma.comment.findMany({
+    where: {
+      record_id: recordId,
+    },
+  });
+  const recentComments: CommentDto[] = [];
+
+  const promises = comments.map(async (comment) => {
+    const writer = await prisma.user.findUnique({
+      where: {
+        id: comment.writer,
+      },
+    });
+    if (!writer) throw new Error('no comment writer');
+
+    const isEmoji = comment.emoji ? true : false;
+
+    const commentDate = dayjs(comment.created_at).format('M월 D일');
+
+    const data: CommentDto = {
+      isEmoji: isEmoji,
+      nickName: writer.nick_name,
+      photo: writer.photo,
+      content: comment.content,
+      emoji: comment.emoji,
+      date: commentDate,
+    };
+
+    recentComments.push(data);
+  });
+  await Promise.all(promises);
+
+  return recentComments;
+};
 
 //? 일반 댓글 작성
 const createComment = async (
   userId: number,
   recordId: number,
   content: string
-): Promise<CommentResponseDto[]> => {
+): Promise<CommentDto[]> => {
   const record = await prisma.record.findFirst({
     where: {
       id: recordId,
@@ -32,32 +69,7 @@ const createComment = async (
       },
     },
   });
-
-  const comments = await prisma.comment.findMany();
-  const recentComments: CommentResponseDto[] = [];
-
-  const promises = comments.map(async (comment) => {
-    const writer = await prisma.user.findUnique({
-      where: {
-        id: comment.writer,
-      },
-    });
-    if (!writer) throw new Error('no comment writer');
-
-    const data: CommentResponseDto = {
-      nickName: writer.nick_name,
-      photo: writer.photo,
-      content: comment.content,
-      emoji: comment.emoji,
-      createdAt: comment.created_at,
-      updatedAt: comment.updated_at,
-    };
-
-    recentComments.push(data);
-  });
-  await Promise.all(promises);
-
-  return recentComments;
+  return getAllComment(recordId);
 };
 
 //? 이모지 댓글 작성
@@ -65,7 +77,7 @@ const createEmojiComment = async (
   userId: number,
   recordId: number,
   emoji: number
-): Promise<CommentResponseDto[]> => {
+): Promise<CommentDto[]> => {
   const record = await prisma.record.findFirst({
     where: {
       id: recordId,
@@ -89,32 +101,7 @@ const createEmojiComment = async (
       },
     },
   });
-
-  const comments = await prisma.comment.findMany();
-  const recentComments: CommentResponseDto[] = [];
-
-  const promises = comments.map(async (comment) => {
-    const writer = await prisma.user.findUnique({
-      where: {
-        id: comment.writer,
-      },
-    });
-    if (!writer) throw new Error('no comment writer');
-
-    const data: CommentResponseDto = {
-      nickName: writer.nick_name,
-      photo: writer.photo,
-      content: comment.content,
-      emoji: comment.emoji,
-      createdAt: comment.created_at,
-      updatedAt: comment.updated_at,
-    };
-
-    recentComments.push(data);
-  });
-  await Promise.all(promises);
-
-  return recentComments;
+  return getAllComment(recordId);
 };
 
 const deleteComment = async (commentId: number): Promise<void> => {
@@ -129,6 +116,7 @@ const commentService = {
   createComment,
   createEmojiComment,
   deleteComment,
+  getAllComment,
 };
 
 export default commentService;

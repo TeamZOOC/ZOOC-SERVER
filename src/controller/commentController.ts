@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
-import { CommentResponseDto } from '../interface/comment/CommentResponseDto';
+import { CommentDto } from '../interface/comment/CommentDto';
 import commentService from '../service/commentService';
 
 //? 일반 댓글 작성하기
@@ -12,7 +12,7 @@ const createComment = async (req: Request, res: Response) => {
     const recordId = req.params.recordId;
     const { content } = req.body;
 
-    const data: CommentResponseDto[] = await commentService.createComment(
+    const data: CommentDto[] = await commentService.createComment(
       1,
       +recordId,
       content
@@ -37,7 +37,7 @@ const createEmojiComment = async (req: Request, res: Response) => {
     const recordId = req.params.recordId;
     const { emoji } = req.body;
 
-    const data: CommentResponseDto[] = await commentService.createEmojiComment(
+    const data: CommentDto[] = await commentService.createEmojiComment(
       1,
       +recordId,
       emoji

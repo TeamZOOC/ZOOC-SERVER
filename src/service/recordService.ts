@@ -12,6 +12,7 @@ import familyService from './familyService';
 const prisma = new PrismaClient();
 import dayjs from 'dayjs';
 import { CommentDto } from '../interface/comment/CommentDto';
+import commentService from './commentService';
 
 //* 완료되지 않은 미션 조회
 const getMission = async (
@@ -166,7 +167,6 @@ const getRecord = async (
   familyId: number,
   recordId: number
 ): Promise<RecordResponseDto> => {
-  //* leftId, rightId
   const orderedRecord = await prisma.record.findMany({
     where: {
       family_id: familyId,
@@ -184,7 +184,6 @@ const getRecord = async (
   if (idx > 0) leftId = orderedRecord[idx - 1].id;
   if (idx < orderedRecord.length - 1) rightId = orderedRecord[idx + 1].id;
 
-  //*record
   const record = await prisma.record.findUnique({
     where: {
       id: recordId,
@@ -212,39 +211,9 @@ const getRecord = async (
     writerName: writer.nick_name,
   };
 
-  //* comment
-  const comments = await prisma.comment.findMany({
-    where: {
-      record_id: recordId,
-    },
-  });
-
-  const recentComments: CommentDto[] = [];
-
-  const promises = comments.map(async (comment) => {
-    const writer = await prisma.user.findUnique({
-      where: {
-        id: comment.writer,
-      },
-    });
-    if (!writer) throw new Error('no comment writer');
-    let isEmoji = false;
-    if (comment.emoji) isEmoji = true;
-
-    const commentDate = dayjs(comment.created_at).format('M월 D일');
-
-    const data: CommentDto = {
-      isEmoji: isEmoji,
-      nickName: writer.nick_name,
-      photo: writer.photo,
-      content: comment.content,
-      emoji: comment.emoji,
-      date: commentDate,
-    };
-
-    recentComments.push(data);
-  });
-  await Promise.all(promises);
+  const recentComments: CommentDto[] = await commentService.getAllComment(
+    recordId
+  );
 
   const recordResponseDto: RecordResponseDto = {
     leftId: leftId,
