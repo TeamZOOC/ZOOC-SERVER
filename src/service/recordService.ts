@@ -285,7 +285,7 @@ const getAllRecord = async (
 
     if (!writer) throw new Error('no record writer!');
 
-    const recordDate = dayjs(recordPreview.created_at).format('M월 D일');
+    const recordDate = dayjs(recordPreview.created_at).format('M/D');
 
     const recordDto: RecordDto = {
       id: recordPreview.id,
