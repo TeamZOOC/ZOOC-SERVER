@@ -90,11 +90,11 @@ const createRecord = async (req: Request, res: Response) => {
 //? 기록 상세 조회
 const getRecord = async (req: Request, res: Response) => {
   try {
-    const recordId = req.params.recordId;
+    const { familyId, recordId } = req.params;
     if (!recordId)
       return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
 
-    const data = await recordService.getRecord(+recordId);
+    const data = await recordService.getRecord(+familyId, +recordId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
   } catch (error) {
     console.error(error);
