@@ -91,11 +91,18 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
   const familyMembers: UserDto[] = await getFamilyMembers(families[0].id);
   const familyPets: PetDto[] = await getFamilyPets(families[0].id);
 
+  const index = _.findIndex(familyMembers, { id: user.id });
+
+  const tmp = familyMembers[index];
+  familyMembers[index] = familyMembers[0];
+  familyMembers[0] = tmp;
+
   const data: MypageResponseDto = {
     user: user,
     familyMember: familyMembers,
     pet: familyPets,
   };
+
   return data;
 };
 

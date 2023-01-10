@@ -17,6 +17,7 @@
     "@prisma/client": "^4.8.0",
     "aws-sdk": "^2.1286.0",
     "axios": "^1.2.2",
+    "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",

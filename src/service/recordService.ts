@@ -1,3 +1,9 @@
+import {
+  CommentWriterDto,
+  RecordPreviewResponseDto,
+} from './../interface/record/RecordPreviewResponseDto';
+import { RecordResponseDto } from '../interface/record/RecordResponseDto';
+import { RecordDto } from './../interface/record/RecordDto';
 import { PrismaClient } from '@prisma/client';
 import _ from 'lodash';
 import { PetDto } from '../interface/family/PetDto';
@@ -5,7 +11,10 @@ import { MissionDto } from '../interface/record/MissionDto';
 import { UserDto } from '../interface/user/UserDto';
 import familyService from './familyService';
 const prisma = new PrismaClient();
+import dayjs from 'dayjs';
+import { CommentDto } from '../interface/comment/CommentDto';
 
+//* 완료되지 않은 미션 조회
 const getMission = async (
   userId: number,
   familyId: number
@@ -66,10 +75,12 @@ const getMission = async (
   return unCompletedMissionList;
 };
 
+//* 펫 전제조회
 const getAllPet = async (familyId: number): Promise<PetDto[]> => {
   return familyService.getFamilyPets(familyId);
 };
 
+//* 기록 삭제하기
 const deleteRecord = async (recordId: number): Promise<void> => {
   await prisma.record.delete({
     where: {
@@ -78,6 +89,7 @@ const deleteRecord = async (recordId: number): Promise<void> => {
   });
 };
 
+//* 기록 작성하기
 const createRecord = async (
   userId: number,
   familyId: number,
@@ -167,11 +179,200 @@ const createRecord = async (
   });
 };
 
+//* 기록 상세조회
+const getRecord = async (
+  familyId: number,
+  recordId: number
+): Promise<RecordResponseDto> => {
+  //* leftId, rightId
+  const orderedRecord = await prisma.record.findMany({
+    where: {
+      family_id: familyId,
+    },
+    orderBy: {
+      created_at: 'desc',
+    },
+  });
+
+  const idx = orderedRecord.findIndex((record) => record.id === recordId);
+
+  let leftId = null;
+  let rightId = null;
+
+  if (idx > 0) leftId = orderedRecord[idx - 1].id;
+  if (idx < orderedRecord.length - 1) rightId = orderedRecord[idx + 1].id;
+
+  //*record
+  const record = await prisma.record.findUnique({
+    where: {
+      id: recordId,
+    },
+  });
+
+  if (!record) throw new Error('no record!');
+
+  const writer = await prisma.user.findUnique({
+    where: {
+      id: record.writer,
+    },
+  });
+
+  if (!writer) throw new Error('no record writer!');
+
+  const recordDate = dayjs(record.created_at).format('M월 D일');
+
+  const recordDto: RecordDto = {
+    id: recordId,
+    photo: record.photo,
+    content: record.content,
+    date: recordDate,
+    writerPhoto: writer.photo,
+    writerName: writer.nick_name,
+  };
+
+  //* comment
+  const comments = await prisma.comment.findMany({
+    where: {
+      record_id: recordId,
+    },
+  });
+
+  const recentComments: CommentDto[] = [];
+
+  const promises = comments.map(async (comment) => {
+    const writer = await prisma.user.findUnique({
+      where: {
+        id: comment.writer,
+      },
+    });
+    if (!writer) throw new Error('no comment writer');
+    let isEmoji = false;
+    if (comment.emoji) isEmoji = true;
+
+    const commentDate = dayjs(comment.created_at).format('M월 D일');
+
+    const data: CommentDto = {
+      isEmoji: isEmoji,
+      nickName: writer.nick_name,
+      photo: writer.photo,
+      content: comment.content,
+      emoji: comment.emoji,
+      date: commentDate,
+    };
+
+    recentComments.push(data);
+  });
+  await Promise.all(promises);
+
+  const recordResponseDto: RecordResponseDto = {
+    leftId: leftId,
+    rightId: rightId,
+    record: recordDto,
+    comments: recentComments,
+  };
+
+  return recordResponseDto;
+};
+
+//* 기록 전체조회
+const getAllRecord = async (
+  familyId: number
+): Promise<RecordPreviewResponseDto[]> => {
+  const recordPreviews = await prisma.record.findMany({
+    where: {
+      family_id: familyId,
+    },
+  });
+
+  const recordResponse: RecordPreviewResponseDto[] = [];
+
+  const recordPromises = recordPreviews.map(async (recordPreview) => {
+    const record = await prisma.record.findUnique({
+      where: {
+        id: recordPreview.id,
+      },
+    });
+
+    if (!record) throw new Error('no record!');
+
+    const writer = await prisma.user.findUnique({
+      where: {
+        id: recordPreview.writer,
+      },
+    });
+
+    if (!writer) throw new Error('no record writer!');
+
+    const recordDate = dayjs(recordPreview.created_at).format('M/D');
+
+    const recordDto: RecordDto = {
+      id: recordPreview.id,
+      photo: recordPreview.photo,
+      content: recordPreview.content,
+      date: recordDate,
+      writerPhoto: writer.photo,
+      writerName: writer.nick_name,
+    };
+
+    const commentWriters: CommentWriterDto[] = [];
+
+    const comments = await prisma.comment.findMany({
+      where: {
+        record_id: recordPreview.id,
+      },
+      select: {
+        writer: true,
+      },
+    });
+
+    const commentPromises = comments.map(async (comment) => {
+      const writer = await prisma.user.findUnique({
+        where: {
+          id: comment.writer,
+        },
+        select: {
+          id: true,
+          photo: true,
+        },
+      });
+      if (!writer) throw new Error('no comment writer!');
+
+      const commentWriterDto: CommentWriterDto = {
+        writerId: writer.id,
+        writerPhoto: writer.photo,
+      };
+
+      const existWriter = commentWriters.find(
+        (commentWriter) => commentWriter.writerId === writer.id
+      );
+      if (!existWriter) commentWriters.push(commentWriterDto);
+    });
+    await Promise.all(commentPromises);
+
+    const data: RecordPreviewResponseDto = {
+      record: recordDto,
+      commentWriters: commentWriters,
+    };
+    recordDto.id;
+
+    recordResponse.push(data);
+  });
+  await Promise.all(recordPromises);
+
+  const orderedRecordResponse = recordResponse.sort(function (a, b) {
+    return b.record.id - a.record.id;
+  });
+
+  return orderedRecordResponse;
+};
+
 const recordService = {
   getMission,
   getAllPet,
   deleteRecord,
   createRecord,
+  getRecord,
+  getAllRecord,
 };
 
 export default recordService;
