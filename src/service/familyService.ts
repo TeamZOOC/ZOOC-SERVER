@@ -55,6 +55,19 @@ const getFamilyMembers = async (familyId: number): Promise<UserDto[]> => {
   return users;
 };
 
+//~ 로그인 유저 제외 가족 정보 조회
+const getFamilyMembersExceptUser = async (
+  userId: number,
+  familyId: number
+): Promise<UserDto[]> => {
+  const familyMembers: UserDto[] = await getFamilyMembers(familyId);
+  _.remove(familyMembers, (familyMember) => {
+    return familyMember.id === userId;
+  });
+
+  return familyMembers;
+};
+
 //~ 가족 반려동물 조회
 const getFamilyPets = async (familyId: number): Promise<PetDto[]> => {
   const pets: PetDto[] = await prisma.pet.findMany({
@@ -167,6 +180,7 @@ const familyService = {
   getFamilyById,
   createPet,
   enrollUsertoFamily,
+  getFamilyMembersExceptUser,
 };
 
 export default familyService;

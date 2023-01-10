@@ -5,9 +5,10 @@ import {
 import { RecordResponseDto } from '../interface/record/RecordResponseDto';
 import { RecordDto } from './../interface/record/RecordDto';
 import { PrismaClient } from '@prisma/client';
-import _, { inRange } from 'lodash';
+import _ from 'lodash';
 import { PetDto } from '../interface/family/PetDto';
 import { MissionDto } from '../interface/record/MissionDto';
+import { UserDto } from '../interface/user/UserDto';
 import familyService from './familyService';
 const prisma = new PrismaClient();
 import dayjs from 'dayjs';
@@ -160,6 +161,23 @@ const createRecord = async (
     });
   });
   await Promise.all(promises);
+
+  //알람 저장
+  const familyMembers: UserDto[] =
+    await familyService.getFamilyMembersExceptUser(familyId, userId);
+
+  console.log(familyMembers);
+
+  familyMembers.map(async (familyMember) => {
+    await prisma.alarm.create({
+      data: {
+        user_id: familyMember.id,
+        writer_id: userId,
+        family_id: familyId,
+        record_id: recordId,
+      },
+    });
+  });
 };
 
 //* 기록 상세조회
