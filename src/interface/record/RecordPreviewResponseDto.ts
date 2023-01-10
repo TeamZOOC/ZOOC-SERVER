@@ -2,10 +2,10 @@ import { RecordDto } from './RecordDto';
 
 export interface RecordPreviewResponseDto {
   record: RecordDto;
-  commentWriters: commentWriterDto[];
+  commentWriters: CommentWriterDto[];
 }
 
-interface commentWriterDto {
+export interface CommentWriterDto {
   writerId: number;
-  writerphoto: string | null;
+  writerPhoto: string | null;
 }

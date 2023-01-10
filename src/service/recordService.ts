@@ -1,4 +1,7 @@
-import { RecordPreviewResponseDto } from './../interface/record/RecordPreviewResponseDto';
+import {
+  CommentWriterDto,
+  RecordPreviewResponseDto,
+} from './../interface/record/RecordPreviewResponseDto';
 import { RecordResponseDto } from '../interface/record/RecordResponseDto';
 import { RecordDto } from './../interface/record/RecordDto';
 import { PrismaClient } from '@prisma/client';
@@ -9,8 +12,8 @@ import familyService from './familyService';
 const prisma = new PrismaClient();
 import dayjs from 'dayjs';
 import { CommentDto } from '../interface/comment/CommentDto';
-import { RecordPreviewResponseDto } from '../interface/record/RecordPreviewResponseDto';
 
+//* 완료되지 않은 미션 조회
 const getMission = async (
   userId: number,
   familyId: number
@@ -71,10 +74,12 @@ const getMission = async (
   return unCompletedMissionList;
 };
 
+//* 펫 전제조회
 const getAllPet = async (familyId: number): Promise<PetDto[]> => {
   return familyService.getFamilyPets(familyId);
 };
 
+//* 기록 삭제하기
 const deleteRecord = async (recordId: number): Promise<void> => {
   await prisma.record.delete({
     where: {
@@ -83,6 +88,7 @@ const deleteRecord = async (recordId: number): Promise<void> => {
   });
 };
 
+//* 기록 작성하기
 const createRecord = async (
   userId: number,
   familyId: number,
@@ -155,6 +161,7 @@ const createRecord = async (
   await Promise.all(promises);
 };
 
+//* 기록 상세조회
 const getRecord = async (
   familyId: number,
   recordId: number
@@ -249,6 +256,7 @@ const getRecord = async (
   return recordResponseDto;
 };
 
+//* 기록 전체조회
 const getAllRecord = async (
   familyId: number
 ): Promise<RecordPreviewResponseDto[]> => {
@@ -258,9 +266,9 @@ const getAllRecord = async (
     },
   });
 
-  const recordPreviewResponse: RecordPreviewResponseDto[] = [];
+  const recordResponse: RecordPreviewResponseDto[] = [];
 
-  const promises = recordPreviews.map(async (recordPreview) => {
+  const recordPromises = recordPreviews.map(async (recordPreview) => {
     const record = await prisma.record.findUnique({
       where: {
         id: recordPreview.id,
@@ -288,7 +296,7 @@ const getAllRecord = async (
       writerName: writer.nick_name,
     };
 
-    const commentWriterPhotos: string[] = [];
+    const commentWriters: CommentWriterDto[] = [];
 
     const comments = await prisma.comment.findMany({
       where: {
@@ -299,33 +307,45 @@ const getAllRecord = async (
       },
     });
 
-    const promises = comments.map(async (comment) => {
+    const commentPromises = comments.map(async (comment) => {
       const writer = await prisma.user.findUnique({
         where: {
           id: comment.writer,
         },
         select: {
+          id: true,
           photo: true,
         },
       });
       if (!writer) throw new Error('no comment writer!');
-      let photo = '';
-      if (writer.photo) photo = writer.photo;
-      commentWriterPhotos.push(photo);
+
+      const commentWriterDto: CommentWriterDto = {
+        writerId: writer.id,
+        writerPhoto: writer.photo,
+      };
+
+      const existWriter = commentWriters.find(
+        (commentWriter) => commentWriter.writerId === writer.id
+      );
+      if (!existWriter) commentWriters.push(commentWriterDto);
     });
-    await Promise.all(promises);
+    await Promise.all(commentPromises);
 
     const data: RecordPreviewResponseDto = {
       record: recordDto,
-      commentWriterPhotos: commentWriterPhotos,
+      commentWriters: commentWriters,
     };
+    recordDto.id;
 
-    recordPreviewResponse.push(data);
+    recordResponse.push(data);
+  });
+  await Promise.all(recordPromises);
+
+  const orderedRecordResponse = recordResponse.sort(function (a, b) {
+    return b.record.id - a.record.id;
   });
 
-  await Promise.all(promises);
-
-  return recordPreviewResponse;
+  return orderedRecordResponse;
 };
 
 const recordService = {
