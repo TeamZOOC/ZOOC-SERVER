@@ -1,3 +1,4 @@
+import { RecordPreviewResponseDto } from './../interface/record/RecordPreviewResponseDto';
 import { RecordResponseDto } from '../interface/record/RecordResponseDto';
 import { RecordDto } from './../interface/record/RecordDto';
 import { PrismaClient } from '@prisma/client';
@@ -8,6 +9,7 @@ import familyService from './familyService';
 const prisma = new PrismaClient();
 import dayjs from 'dayjs';
 import { CommentDto } from '../interface/comment/CommentDto';
+import { RecordPreviewResponseDto } from '../interface/record/RecordPreviewResponseDto';
 
 const getMission = async (
   userId: number,
@@ -246,12 +248,93 @@ const getRecord = async (
 
   return recordResponseDto;
 };
+
+const getAllRecord = async (
+  familyId: number
+): Promise<RecordPreviewResponseDto[]> => {
+  const recordPreviews = await prisma.record.findMany({
+    where: {
+      family_id: familyId,
+    },
+  });
+
+  const recordPreviewResponse: RecordPreviewResponseDto[] = [];
+
+  const promises = recordPreviews.map(async (recordPreview) => {
+    const record = await prisma.record.findUnique({
+      where: {
+        id: recordPreview.id,
+      },
+    });
+
+    if (!record) throw new Error('no record!');
+
+    const writer = await prisma.user.findUnique({
+      where: {
+        id: recordPreview.writer,
+      },
+    });
+
+    if (!writer) throw new Error('no record writer!');
+
+    const recordDate = dayjs(recordPreview.created_at).format('M월 D일');
+
+    const recordDto: RecordDto = {
+      id: recordPreview.id,
+      photo: recordPreview.photo,
+      content: recordPreview.content,
+      date: recordDate,
+      writerPhoto: writer.photo,
+      writerName: writer.nick_name,
+    };
+
+    const commentWriterPhotos: string[] = [];
+
+    const comments = await prisma.comment.findMany({
+      where: {
+        record_id: recordPreview.id,
+      },
+      select: {
+        writer: true,
+      },
+    });
+
+    const promises = comments.map(async (comment) => {
+      const writer = await prisma.user.findUnique({
+        where: {
+          id: comment.writer,
+        },
+        select: {
+          photo: true,
+        },
+      });
+      if (!writer) throw new Error('no comment writer!');
+      let photo = '';
+      if (writer.photo) photo = writer.photo;
+      commentWriterPhotos.push(photo);
+    });
+    await Promise.all(promises);
+
+    const data: RecordPreviewResponseDto = {
+      record: recordDto,
+      commentWriterPhotos: commentWriterPhotos,
+    };
+
+    recordPreviewResponse.push(data);
+  });
+
+  await Promise.all(promises);
+
+  return recordPreviewResponse;
+};
+
 const recordService = {
   getMission,
   getAllPet,
   deleteRecord,
   createRecord,
   getRecord,
+  getAllRecord,
 };
 
 export default recordService;
