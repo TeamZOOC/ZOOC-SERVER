@@ -104,11 +104,33 @@ const getRecord = async (req: Request, res: Response) => {
   }
 };
 
+//? 기록 전체 조회
+const getAllRecord = async (req: Request, res: Response) => {
+  try {
+    const { familyId } = req.params;
+    if (!familyId)
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+
+    const data = await recordService.getAllRecord(+familyId);
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const recordController = {
   getMission,
   getAllPet,
   deleteRecord,
   createRecord,
   getRecord,
+  getAllRecord,
 };
 export default recordController;
