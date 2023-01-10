@@ -35,6 +35,7 @@ jobs:
         working-directory: ./
         run: |
           yarn
+          yarn prisma generate
           yarn run build
 
       - name: zip file
