@@ -3,6 +3,6 @@ export interface CommentDto {
   nickName: string;
   photo: string | null;
   content: string | null;
-  emoji: string | null;
+  emoji: number | null;
   date: string;
 }
