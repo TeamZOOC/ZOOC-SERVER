@@ -1,8 +1,8 @@
 export interface RecordDto {
   id: number;
-  recordPhoto: string;
+  photo: string;
   content: string;
   date: string;
-  userPhoto: string;
-  nickName: string;
+  writerPhoto: string | null;
+  writerName: string;
 }
