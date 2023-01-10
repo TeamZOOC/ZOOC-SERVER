@@ -59,4 +59,7 @@ export default {
 
   // 유저
   UPDATE_USER_PROFILE_SUCCESS: '유저 프로필 수정 성공',
+
+  //알람
+  GET_ALARM_LIST_SUCCESS: '알람 리스트 조회 성공',
 };

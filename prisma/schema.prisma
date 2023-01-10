@@ -24,6 +24,7 @@ model family {
   code        String        @unique @db.VarChar(100)
   created_at  DateTime      @default(now()) @db.Timestamp(6)
   updated_at  DateTime      @default(now()) @db.Timestamp(6)
+  alarm       alarm[]
   pet         pet[]
   record      record[]
   user_family user_family[]
@@ -55,6 +56,7 @@ model record {
   created_at DateTime     @default(now()) @db.Timestamp(6)
   updated_at DateTime     @default(now()) @db.Timestamp(6)
   family_id  Int
+  alarm      alarm[]
   comment    comment[]
   family     family       @relation(fields: [family_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "record_family_id_fk")
   mission    mission?     @relation(fields: [mission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "record_mission_id_fk")
@@ -74,19 +76,21 @@ model record_pet {
 }
 
 model user {
-  id           Int           @id @unique @default(autoincrement())
-  photo        String?       @db.VarChar(500)
-  nick_name    String        @db.VarChar(10)
-  jwt_token    String        @db.VarChar(200)
-  fcm_token    String        @db.VarChar(200)
-  created_at   DateTime      @default(now()) @db.Timestamp(6)
-  updated_at   DateTime      @default(now()) @db.Timestamp(6)
-  social_id    BigInt        @unique
-  provider     String        @default("kakao") @db.VarChar(100)
-  alarmsetting alarmsetting?
-  comment      comment[]
-  record       record[]
-  user_family  user_family[]
+  id                          Int           @id @unique @default(autoincrement())
+  photo                       String?       @db.VarChar(500)
+  nick_name                   String        @db.VarChar(10)
+  jwt_token                   String        @db.VarChar(200)
+  fcm_token                   String        @db.VarChar(200)
+  created_at                  DateTime      @default(now()) @db.Timestamp(6)
+  updated_at                  DateTime      @default(now()) @db.Timestamp(6)
+  social_id                   BigInt        @unique
+  provider                    String        @default("kakao") @db.VarChar(100)
+  alarm_alarm_writer_idTouser alarm[]       @relation("alarm_writer_idTouser")
+  alarm_alarm_user_idTouser   alarm[]       @relation("alarm_user_idTouser")
+  alarmsetting                alarmsetting?
+  comment                     comment[]
+  record                      record[]
+  user_family                 user_family[]
 }
 
 model user_family {
@@ -100,9 +104,23 @@ model user_family {
   @@id([user_id, family_id], map: "user_family_pk")
 }
 
+model alarm {
+  id                         Int      @id @default(autoincrement())
+  user_id                    Int
+  writer_id                  Int
+  family_id                  Int
+  record_id                  Int
+  created_at                 DateTime @default(now()) @db.Timestamp(6)
+  updated_at                 DateTime @default(now()) @db.Timestamp(6)
+  family                     family   @relation(fields: [family_id], references: [id], onDelete: Cascade, onUpdate: SetDefault, map: "alarm_family_id_fk")
+  record                     record   @relation(fields: [record_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "alarm_record_id_fk")
+  user_alarm_writer_idTouser user     @relation("alarm_writer_idTouser", fields: [writer_id], references: [id], onDelete: Cascade, onUpdate: SetNull, map: "alarm_user_id_fk")
+  user_alarm_user_idTouser   user     @relation("alarm_user_idTouser", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "alarm_user_id_fk_2")
+}
+
 model alarmsetting {
-  id      Int      @id @default(autoincrement())
-  user_id Int?     @unique
-  record  Boolean? @default(true)
-  user    user?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "alarmsetting_user_id_fk")
+  id      Int     @id @default(autoincrement())
+  user_id Int     @unique
+  record  Boolean @default(true)
+  user    user    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "alarmsetting_user_id_fk")
 }

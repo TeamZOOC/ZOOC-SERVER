@@ -4,6 +4,7 @@ import { MypageResponseDto } from './../interface/family/MypageResponseDto';
 import { PrismaClient } from '@prisma/client';
 import { UserDto } from '../interface/user/UserDto';
 import userService from './userService';
+import _ from 'lodash';
 const prisma = new PrismaClient();
 
 //~ 사용자의 전체 가족 정보 조회
@@ -77,11 +78,18 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
   const familyMembers: UserDto[] = await getFamilyMembers(families[0].id);
   const familyPets: PetDto[] = await getFamilyPets(families[0].id);
 
+  const index = _.findIndex(familyMembers, { id: user.id });
+
+  const tmp = familyMembers[index];
+  familyMembers[index] = familyMembers[0];
+  familyMembers[0] = tmp;
+
   const data: MypageResponseDto = {
     user: user,
     familyMember: familyMembers,
     pet: familyPets,
   };
+
   return data;
 };
 
