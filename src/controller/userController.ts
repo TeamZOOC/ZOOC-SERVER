@@ -13,6 +13,20 @@ const signInKakao = async (req: Request, res: Response) => {
   return res.status(200).json({ jwtToken: jwtToken });
 };
 
+//~ 회원 탈퇴
+const deleteUser = async (req: Request, res: Response) => {
+  const userId = req.body.userId;
+  try {
+    await userService.deleteUser(+userId);
+    return res.status(sc.OK).send(success(sc.OK, rm.DELETE_USER_SUCCESS));
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const patchUserProfile = async (req: Request, res: Response) => {
   const { userId, nickName } = req.body;
   const is_photo = req.query.photo === 'true' ? true : false;
@@ -63,6 +77,7 @@ const patchUserProfile = async (req: Request, res: Response) => {
 const userController = {
   signInKakao,
   patchUserProfile,
+  deleteUser,
 };
 
 export default userController;
