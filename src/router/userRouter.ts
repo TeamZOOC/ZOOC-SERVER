@@ -11,5 +11,6 @@ router.patch(
   auth,
   userController.patchUserProfile
 );
+router.delete('/', auth, userController.deleteUser);
 
 export default router;
