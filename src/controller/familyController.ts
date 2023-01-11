@@ -7,12 +7,12 @@ import { fail, success } from '../constants/response';
 import { PetDto } from '../interface/family/PetDto';
 
 const createPet = async (req: Request, res: Response) => {
+  const familyId = req.params.familyId;
+  const { name } = req.body;
+
   try {
     const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
-    const { location } = image;
-
-    const familyId = req.params.familyId;
-    const { name } = req.body;
+    const location = req.file ? image.location : null;
 
     const data: PetDto = await familyService.createPet(
       name,
