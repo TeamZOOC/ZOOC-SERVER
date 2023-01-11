@@ -52,6 +52,14 @@ export default {
   FULL_FAMILY_MEMBER: '가족 인원이 다 찼습니다',
   ALREADY_FAMILY: '이미 가족입니다',
 
+  //댓글
+  CREATE_COMMENT_SUCCESS: '일반 댓글 생성 성공',
+  CREATE_EMOJI_COMMENT_SUCCESS: '이모지 댓글 생성 성공',
+  DELETE_COMMENT_SUCCESS: '댓글 삭제 성공',
+
   // 유저
   UPDATE_USER_PROFILE_SUCCESS: '유저 프로필 수정 성공',
+
+  //알람
+  GET_ALARM_LIST_SUCCESS: '알람 리스트 조회 성공',
 };

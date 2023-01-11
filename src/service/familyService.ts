@@ -4,6 +4,7 @@ import { MypageResponseDto } from './../interface/family/MypageResponseDto';
 import { PrismaClient } from '@prisma/client';
 import { UserDto } from '../interface/user/UserDto';
 import userService from './userService';
+import _ from 'lodash';
 const prisma = new PrismaClient();
 
 //~ 사용자의 전체 가족 정보 조회
@@ -54,6 +55,19 @@ const getFamilyMembers = async (familyId: number): Promise<UserDto[]> => {
   return users;
 };
 
+//~ 로그인 유저 제외 가족 정보 조회
+const getFamilyMembersExceptUser = async (
+  userId: number,
+  familyId: number
+): Promise<UserDto[]> => {
+  const familyMembers: UserDto[] = await getFamilyMembers(familyId);
+  _.remove(familyMembers, (familyMember) => {
+    return familyMember.id === userId;
+  });
+
+  return familyMembers;
+};
+
 //~ 가족 반려동물 조회
 const getFamilyPets = async (familyId: number): Promise<PetDto[]> => {
   const pets: PetDto[] = await prisma.pet.findMany({
@@ -77,11 +91,18 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
   const familyMembers: UserDto[] = await getFamilyMembers(families[0].id);
   const familyPets: PetDto[] = await getFamilyPets(families[0].id);
 
+  const index = _.findIndex(familyMembers, { id: user.id });
+
+  const tmp = familyMembers[index];
+  familyMembers[index] = familyMembers[0];
+  familyMembers[0] = tmp;
+
   const data: MypageResponseDto = {
     user: user,
     familyMember: familyMembers,
     pet: familyPets,
   };
+
   return data;
 };
 
@@ -159,6 +180,7 @@ const familyService = {
   getFamilyById,
   createPet,
   enrollUsertoFamily,
+  getFamilyMembersExceptUser,
 };
 
 export default familyService;
