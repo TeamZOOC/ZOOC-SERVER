@@ -84,7 +84,7 @@ const createEmojiComment = async (
     },
   });
   if (!record) throw new Error('no record');
-  if (!emoji) throw new Error('no emoji');
+  if (emoji !== 0 && !emoji) throw new Error('no emoji');
 
   await prisma.comment.create({
     data: {
