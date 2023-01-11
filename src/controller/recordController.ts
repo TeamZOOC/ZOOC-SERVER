@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
+import webhook from '../modules/test-message';
 import recordService from '../service/recordService';
 
 //? 완료하지 않은 미션 전체 조회
 const getMission = async (req: Request, res: Response) => {
-  try {
-    //const userId: number = req.body.userId;
+  const userId: number = req.body.userId;
 
+  try {
     const familyId = req.params.familyId;
     if (!familyId)
       return res
@@ -18,6 +19,13 @@ const getMission = async (req: Request, res: Response) => {
     return res.status(sc.OK).send(success(sc.OK, rm.GET_MISSION_SUCCESS, data));
   } catch (error) {
     console.error(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      userId
+    );
+    webhook.sendWebhook(errorMessage);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -37,6 +45,8 @@ const getAllPet = async (req: Request, res: Response) => {
     return res.status(sc.OK).send(success(sc.OK, rm.GET_ALL_PET_SUCCESS, data));
   } catch (error) {
     console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -45,16 +55,27 @@ const getAllPet = async (req: Request, res: Response) => {
 
 //? 기록 삭제하기
 const deleteRecord = async (req: Request, res: Response) => {
-  const { recordId } = req.params;
+  try {
+    const { recordId } = req.params;
 
-  await recordService.deleteRecord(+recordId);
-  return res.status(sc.OK).send(success(sc.OK, rm.DELETE_RECORD_SUCCESS));
+    await recordService.deleteRecord(+recordId);
+    return res.status(sc.OK).send(success(sc.OK, rm.DELETE_RECORD_SUCCESS));
+  } catch (error) {
+    console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
+
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
 };
 
 //? 기록 작성하기
 const createRecord = async (req: Request, res: Response) => {
+  const userId: number = req.body.userId;
+
   try {
-    //const userId: number = req.body.userId;
     const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
     const { location } = image;
     const { content, pet } = req.body;
@@ -81,6 +102,14 @@ const createRecord = async (req: Request, res: Response) => {
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_RECORD_SUCCESS));
   } catch (error) {
     console.error(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      userId
+    );
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -98,6 +127,8 @@ const getRecord = async (req: Request, res: Response) => {
     return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
   } catch (error) {
     console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -119,6 +150,9 @@ const getAllRecord = async (req: Request, res: Response) => {
       .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
   } catch (error) {
     console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));

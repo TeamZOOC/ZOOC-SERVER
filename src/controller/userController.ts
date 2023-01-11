@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
+import webhook from '../modules/test-message';
 import userService from '../service/userService';
 
 const signInKakao = async (req: Request, res: Response) => {
@@ -54,6 +55,14 @@ const patchUserProfile = async (req: Request, res: Response) => {
       .send(success(sc.OK, rm.UPDATE_USER_PROFILE_SUCCESS, data));
   } catch (error) {
     console.error(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      userId
+    );
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
