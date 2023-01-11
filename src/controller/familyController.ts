@@ -52,6 +52,7 @@ const getMypage = async (req: Request, res: Response) => {
     const data: MypageResponseDto = await familyService.getMypage(userId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_MYPAGE_SUCCESS, data));
   } catch (error) {
+    console.log(error);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -71,6 +72,7 @@ const getFamilyCode = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_FAMILY_CODE_SUCCESS, data));
   } catch (error) {
+    console.log(error);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -113,6 +115,7 @@ const enrollUsertoFamily = async (req: Request, res: Response) => {
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.ALREADY_FAMILY));
   }
+
   return res
     .status(sc.INTERNAL_SERVER_ERROR)
     .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
