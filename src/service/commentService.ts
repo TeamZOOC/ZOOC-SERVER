@@ -20,7 +20,7 @@ const getAllComment = async (recordId: number): Promise<CommentDto[]> => {
     });
     if (!writer) throw new Error('no comment writer');
 
-    const isEmoji = comment.emoji ? true : false;
+    const isEmoji = comment.emoji || comment.emoji === 0 ? true : false;
 
     const commentDate = dayjs(comment.created_at).format('M월 D일');
 
@@ -84,7 +84,7 @@ const createEmojiComment = async (
     },
   });
   if (!record) throw new Error('no record');
-  if (!emoji) throw new Error('no emoji');
+  if (emoji !== 0 && !emoji) throw new Error('no emoji');
 
   await prisma.comment.create({
     data: {
