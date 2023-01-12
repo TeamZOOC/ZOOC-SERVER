@@ -16,13 +16,13 @@ router.delete('/:recordId', recordController.deleteRecord);
 //? POST record/{familyId}?missionId=
 router.post('/:familyId', upload.single('file'), recordController.createRecord);
 
-//? GET record/{familyId}/{recordId}
-router.get('/:familyId/:recordId', recordController.getRecord);
+//? GET record/detail/{familyId}/{recordId}
+router.get('/detail/:familyId/:recordId', recordController.getRecord);
 
 //? GET record/{familyId}/{petId}
-router.get('/:familyId', recordController.getAllRecord);
+router.get('/:familyId/:petId', recordController.getAllRecord);
 
 //? GET record/aos/{familyId}/{petId}
-router.get('/aos/:familyId', recordController.getAllRecordAos);
+router.get('/aos/:familyId/:petId', recordController.getAllRecordAos);
 
 export default router;

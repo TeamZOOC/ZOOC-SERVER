@@ -328,7 +328,6 @@ const getAllRecord = async (
       record: recordDto,
       commentWriters: commentWriters,
     };
-    recordDto.id;
 
     recordResponse.push(data);
   });
