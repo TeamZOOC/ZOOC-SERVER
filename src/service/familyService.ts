@@ -110,7 +110,7 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
 //~ 가족에 반려동물 등록하기
 const createPet = async (
   name: string,
-  photo: string,
+  photo: string | null,
   familyId: number
 ): Promise<PetDto> => {
   const data: PetDto = await prisma.pet.create({

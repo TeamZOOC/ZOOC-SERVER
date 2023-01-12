@@ -10,7 +10,7 @@ const router: Router = Router();
 router.use('/user', userRouter);
 router.use('/family', familyRouter);
 router.use('/record', recordRouter);
-router.use('/alarm', alarmRouter);
+router.use('/alarm', auth, alarmRouter);
 router.use('/comment', commentRouter);
 
 export default router;
