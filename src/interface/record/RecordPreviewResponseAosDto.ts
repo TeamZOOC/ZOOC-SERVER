@@ -3,5 +3,5 @@ import { RecordDto } from './RecordDto';
 
 export interface RecordPreviewResponseAosDto {
   record: RecordDto;
-  commentWriters: CommentDto[];
+  comments: CommentDto[];
 }
