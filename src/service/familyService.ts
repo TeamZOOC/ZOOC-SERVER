@@ -224,6 +224,8 @@ const createFamily = async (
       family_id: family.id,
     },
   });
+
+  createPets(petNames, petPhotos, family.id);
 };
 
 const familyService = {
@@ -231,7 +233,7 @@ const familyService = {
   getMypage,
   getFamilyPets,
   getFamilyById,
-  createPet,
+  createPets,
   enrollUserToFamily,
   getFamilyMembersExceptUser,
   createFamily,
