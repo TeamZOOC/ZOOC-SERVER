@@ -5,6 +5,8 @@ import { PrismaClient } from '@prisma/client';
 import { UserDto } from '../interface/user/UserDto';
 import userService from './userService';
 import _ from 'lodash';
+import bcrypt from 'bcryptjs';
+import { Locations } from 'aws-sdk/clients/directconnect';
 const prisma = new PrismaClient();
 
 //~ 사용자의 전체 가족 정보 조회
@@ -106,26 +108,28 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
   return data;
 };
 
-//~ 가족에 반려동물 등록하기
-const createPet = async (
-  name: string,
-  photo: string,
-  familyId: number
-): Promise<PetDto> => {
-  const data: PetDto = await prisma.pet.create({
-    data: {
-      name: name,
-      photo: photo,
-      family: {
-        connect: {
-          id: familyId,
-        },
-      },
-    },
-  });
+// //~ 가족에 반려동물 등록하기
+// const createPet = async (
+//   name: string,
+//   photo: string,
+//   familyId: number
+// ): Promise<PetDto> => {
+//   const data: PetDto = await prisma.pet.create({
+//     data: {
+//       name: name,
+//       photo: photo,
+//       family: {
+//         connect: {
+//           id: familyId,
+//         },
+//       },
+//     },
+//   });
 
-  return data;
-};
+//   return data;
+// };
+
+//~ 가족에 반려동물 리스트 등록하기
 
 //~ 입력한 가족 코드에 해당하는 가족 정보 불러오기
 const searchFamilyByCode = async (code: string) => {
@@ -139,7 +143,7 @@ const searchFamilyByCode = async (code: string) => {
 };
 
 //~ 가족에 유저 등록하기
-const enrollUsertoFamily = async (userId: number, code: string) => {
+const enrollUserToFamily = async (userId: number, code: string) => {
   // 입력한 가족 코드에 해당하는 가족 정보 불러오기
   const family = await searchFamilyByCode(code);
 
@@ -173,14 +177,50 @@ const enrollUsertoFamily = async (userId: number, code: string) => {
   throw new Error('full family');
 };
 
+const createFamily = async (
+  userId: number,
+  petPhotos: string[],
+  petNames: string[]
+): Promise<void> => {
+  if (petPhotos.length !== petNames.length)
+    throw new Error('Forget pet photos');
+
+  const salt = await bcrypt.genSalt(10);
+  const code = await bcrypt.hash(String(userId), salt);
+
+  const family = await prisma.family.create({
+    data: {
+      code: code,
+    },
+  });
+
+  await prisma.user_family.create({
+    data: {
+      user_id: userId,
+      family_id: family.id,
+    },
+  });
+
+  for (let i = 0; i < petNames.length; i++) {
+    await prisma.pet.create({
+      data: {
+        name: petNames[i],
+        photo: petPhotos[i],
+        family_id: family.id,
+      },
+    });
+  }
+};
+
 const familyService = {
   getUserFamily,
   getMypage,
   getFamilyPets,
   getFamilyById,
   createPet,
-  enrollUsertoFamily,
+  enrollUserToFamily,
   getFamilyMembersExceptUser,
+  createFamily,
 };
 
 export default familyService;
