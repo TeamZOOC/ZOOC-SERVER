@@ -161,12 +161,9 @@ const createRecord = async (
     });
   });
   await Promise.all(promises);
-
   //알람 저장
   const familyMembers: UserDto[] =
-    await familyService.getFamilyMembersExceptUser(familyId, userId);
-
-  console.log(familyMembers);
+    await familyService.getFamilyMembersExceptUser(userId, familyId);
 
   familyMembers.map(async (familyMember) => {
     await prisma.alarm.create({
