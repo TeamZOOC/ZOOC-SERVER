@@ -19,7 +19,10 @@ router.post('/:familyId', upload.single('file'), recordController.createRecord);
 //? GET record/{familyId}/{recordId}
 router.get('/:familyId/:recordId', recordController.getRecord);
 
-//? GET record/{familyId}
+//? GET record/{familyId}/{petId}
 router.get('/:familyId', recordController.getAllRecord);
+
+//? GET record/aos/{familyId}/{petId}
+router.get('/aos/:familyId', recordController.getAllRecordAos);
 
 export default router;
