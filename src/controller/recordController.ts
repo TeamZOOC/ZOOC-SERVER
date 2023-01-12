@@ -4,7 +4,7 @@ import { fail, success } from '../constants/response';
 import webhook from '../modules/test-message';
 import recordService from '../service/recordService';
 
-//? 완료하지 않은 미션 전체 조회
+//? 완료하지 않은 미션 전체조회
 const getMission = async (req: Request, res: Response) => {
   const userId: number = req.body.userId;
 
@@ -15,7 +15,7 @@ const getMission = async (req: Request, res: Response) => {
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
-    const data = await recordService.getMission(1, +familyId);
+    const data = await recordService.getMission(userId, +familyId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_MISSION_SUCCESS, data));
   } catch (error) {
     console.error(error);
@@ -92,7 +92,7 @@ const createRecord = async (req: Request, res: Response) => {
     else mission = undefined;
 
     await recordService.createRecord(
-      1,
+      userId,
       +familyId,
       location,
       content,

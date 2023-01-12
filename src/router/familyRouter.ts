@@ -31,6 +31,6 @@ router.post(
 );
 
 //? POST family/user
-router.post('/user', auth, familyController.enrollUserToFamily);
+router.post('/user', familyController.enrollUserToFamily);
 
 export default router;
