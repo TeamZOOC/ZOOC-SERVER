@@ -7,10 +7,10 @@ import { auth } from '../middleware';
 import alarmRouter from './alarmRouter';
 const router: Router = Router();
 
-router.use('/user', userRouter);
-router.use('/family', familyRouter);
-router.use('/record', recordRouter);
+router.use('/user', auth, userRouter);
+router.use('/family', auth, familyRouter);
+router.use('/record', auth, recordRouter);
 router.use('/alarm', auth, alarmRouter);
-router.use('/comment', commentRouter);
+router.use('/comment', auth, commentRouter);
 
 export default router;
