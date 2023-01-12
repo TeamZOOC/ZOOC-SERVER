@@ -2,6 +2,8 @@ import { UserDto } from './../interface/user/UserDto';
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 import jwtHandler from '../modules/jwtHandler';
+import bcrypt from 'bcryptjs';
+import { PetCreateDto } from '../interface/family/PetCreateDto';
 const prisma = new PrismaClient();
 
 const signUp = async (kakaoId: bigint) => {

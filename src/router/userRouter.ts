@@ -13,5 +13,5 @@ router.patch(
   userController.patchUserProfile
 );
 
-router.post('/create', userController.updateUser);
+router.post('/create', userController.initializeUser);
 export default router;

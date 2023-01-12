@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
+import { familyService } from '../service';
 import userService from '../service/userService';
 
 const signInKakao = async (req: Request, res: Response) => {
