@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 import { PetDto } from '../interface/family/PetDto';
+import webhook from '../modules/test-message';
 
 const createPet = async (req: Request, res: Response) => {
   try {
@@ -24,7 +25,10 @@ const createPet = async (req: Request, res: Response) => {
       .status(sc.CREATED)
       .send(success(sc.CREATED, rm.CREATE_PET_SUCCESS, data));
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -32,14 +36,22 @@ const createPet = async (req: Request, res: Response) => {
 };
 
 const getUserFamily = async (req: Request, res: Response) => {
+  const userId: number = req.body.userId;
   try {
-    const userId: number = req.body.userId;
     const data: FamilyDto[] = await familyService.getUserFamily(userId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_USER_FAMILY_SUCCESS, data));
   } catch (error) {
     console.error(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      userId
+    );
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -47,12 +59,19 @@ const getUserFamily = async (req: Request, res: Response) => {
 };
 
 const getMypage = async (req: Request, res: Response) => {
+  const userId: number = req.body.userId;
   try {
-    const userId: number = req.body.userId;
     const data: MypageResponseDto = await familyService.getMypage(userId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_MYPAGE_SUCCESS, data));
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      userId
+    );
+    webhook.sendWebhook(errorMessage);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -72,7 +91,10 @@ const getFamilyCode = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_FAMILY_CODE_SUCCESS, data));
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));

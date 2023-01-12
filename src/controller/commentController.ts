@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 import { CommentDto } from '../interface/comment/CommentDto';
+import webhook from '../modules/test-message';
 import commentService from '../service/commentService';
 
 //? 일반 댓글 작성하기
 const createComment = async (req: Request, res: Response) => {
+  const userId: number = req.body.userId;
   try {
-    const userId: number = req.body.userId;
-
     const recordId = req.params.recordId;
     const { content } = req.body;
 
@@ -23,6 +23,14 @@ const createComment = async (req: Request, res: Response) => {
       .send(success(sc.CREATED, rm.CREATE_COMMENT_SUCCESS, data));
   } catch (error) {
     console.log(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      userId
+    );
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -31,9 +39,8 @@ const createComment = async (req: Request, res: Response) => {
 
 //? 이모지 댓글 작성하기
 const createEmojiComment = async (req: Request, res: Response) => {
+  const userId: number = req.body.userId;
   try {
-    const userId: number = req.body.userId;
-
     const recordId = req.params.recordId;
     const { emoji } = req.body;
 
@@ -48,6 +55,13 @@ const createEmojiComment = async (req: Request, res: Response) => {
       .send(success(sc.CREATED, rm.CREATE_EMOJI_COMMENT_SUCCESS, data));
   } catch (error) {
     console.log(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      userId
+    );
+    webhook.sendWebhook(errorMessage);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
