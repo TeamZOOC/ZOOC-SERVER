@@ -4,7 +4,7 @@ import { fail, success } from '../constants/response';
 import webhook from '../modules/test-message';
 import recordService from '../service/recordService';
 
-//? 완료하지 않은 미션 전체 조회
+//? 완료하지 않은 미션 전체조회
 const getMission = async (req: Request, res: Response) => {
   const userId: number = req.body.userId;
 
