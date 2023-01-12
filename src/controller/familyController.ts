@@ -35,6 +35,40 @@ const createPet = async (req: Request, res: Response) => {
   }
 };
 
+const createPets = async (req: Request, res: Response) => {
+  if (!req.files)
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
+  try {
+    const familyId = req.params.familyId;
+
+    const locations: string[] = await Promise.all(
+      images.map((image: Express.MulterS3.File) => {
+        return image.location;
+      })
+    );
+
+    const { petNames } = req.body;
+
+    const data: PetDto[] = await familyService.createPets(
+      petNames,
+      locations,
+      +familyId
+    );
+
+    return res
+      .status(sc.CREATED)
+      .send(success(sc.CREATED, rm.CREATE_PET_SUCCESS, data));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const getUserFamily = async (req: Request, res: Response) => {
   const userId: number = req.body.userId;
   try {
@@ -101,7 +135,7 @@ const getFamilyCode = async (req: Request, res: Response) => {
   }
 };
 
-const enrollUsertoFamily = async (req: Request, res: Response) => {
+const enrollUserToFamily = async (req: Request, res: Response) => {
   const { userId, code } = req.body;
 
   // code가 없을 떼
@@ -111,7 +145,7 @@ const enrollUsertoFamily = async (req: Request, res: Response) => {
       .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
   try {
-    const data = await familyService.enrollUsertoFamily(userId, code);
+    const data = await familyService.enrollUserToFamily(userId, code);
     // 성공
     if (data) {
       return res
@@ -143,11 +177,41 @@ const enrollUsertoFamily = async (req: Request, res: Response) => {
     .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
 };
 
+const createFamily = async (req: Request, res: Response) => {
+  if (!req.files)
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+
+  const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
+  try {
+    //const userId: number = req.body.userId;
+
+    const locations: string[] = await Promise.all(
+      images.map((image: Express.MulterS3.File) => {
+        return image.location;
+      })
+    );
+
+    const { petNames } = req.body;
+
+    await familyService.createFamily(1, locations, petNames);
+
+    return res.status(sc.OK).send(success(sc.OK, rm.CREATE_FAMILY_SUCCESS));
+  } catch (error) {
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const familyController = {
   getMypage,
   getFamilyCode,
   getUserFamily,
   createPet,
-  enrollUsertoFamily,
+  createPets,
+  enrollUserToFamily,
+  createFamily,
 };
 export default familyController;

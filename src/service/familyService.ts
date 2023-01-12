@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import { UserDto } from '../interface/user/UserDto';
 import userService from './userService';
 import _ from 'lodash';
+import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 //~ 사용자의 전체 가족 정보 조회
@@ -127,6 +128,37 @@ const createPet = async (
   return data;
 };
 
+//~ 가족에 반려동물 리스트 등록하기
+const createPets = async (
+  names: string[],
+  photos: string[],
+  familyId: number
+): Promise<PetDto[]> => {
+  const petList: PetDto[] = [];
+
+  for (let i = 0; i < names.length; i++) {
+    const data: PetDto = await prisma.pet.create({
+      data: {
+        name: names[i],
+        photo: photos[i],
+        family: {
+          connect: {
+            id: familyId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        photo: true,
+      },
+    });
+    petList.push(data);
+  }
+
+  return petList;
+};
+
 //~ 입력한 가족 코드에 해당하는 가족 정보 불러오기
 const searchFamilyByCode = async (code: string) => {
   const family: FamilyDto | null = await prisma.family.findUnique({
@@ -139,7 +171,7 @@ const searchFamilyByCode = async (code: string) => {
 };
 
 //~ 가족에 유저 등록하기
-const enrollUsertoFamily = async (userId: number, code: string) => {
+const enrollUserToFamily = async (userId: number, code: string) => {
   // 입력한 가족 코드에 해당하는 가족 정보 불러오기
   const family = await searchFamilyByCode(code);
 
@@ -173,14 +205,43 @@ const enrollUsertoFamily = async (userId: number, code: string) => {
   throw new Error('full family');
 };
 
+const createFamily = async (
+  userId: number,
+  petPhotos: string[],
+  petNames: string[]
+): Promise<void> => {
+  if (petPhotos.length !== petNames.length)
+    throw new Error('Forget pet photos');
+
+  const salt = await bcrypt.genSalt(10);
+  const code = await bcrypt.hash(String(userId), salt);
+
+  const family = await prisma.family.create({
+    data: {
+      code: code,
+    },
+  });
+
+  await prisma.user_family.create({
+    data: {
+      user_id: userId,
+      family_id: family.id,
+    },
+  });
+
+  createPets(petNames, petPhotos, family.id);
+};
+
 const familyService = {
   getUserFamily,
   getMypage,
+  createPet,
   getFamilyPets,
   getFamilyById,
-  createPet,
-  enrollUsertoFamily,
+  createPets,
+  enrollUserToFamily,
   getFamilyMembersExceptUser,
+  createFamily,
 };
 
 export default familyService;
