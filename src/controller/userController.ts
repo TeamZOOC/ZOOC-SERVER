@@ -16,9 +16,9 @@ const signInKakao = async (req: Request, res: Response) => {
 
 //~ 회원 탈퇴
 const deleteUser = async (req: Request, res: Response) => {
-  const userId = req.body.userId;
+  const userId: number = req.body.userId;
   try {
-    await userService.deleteUser(+userId);
+    await userService.deleteUser(userId);
     return res.status(sc.OK).send(success(sc.OK, rm.DELETE_USER_SUCCESS));
   } catch (error) {
     console.error(error);

@@ -188,7 +188,7 @@ const createFamily = async (req: Request, res: Response) => {
 
   const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
   try {
-    //const userId: number = req.body.userId;
+    const userId: number = req.body.userId;
 
     const locations: string[] = await Promise.all(
       images.map((image: Express.MulterS3.File) => {
@@ -198,7 +198,7 @@ const createFamily = async (req: Request, res: Response) => {
 
     const { petNames } = req.body;
 
-    await familyService.createFamily(1, locations, petNames);
+    await familyService.createFamily(userId, locations, petNames);
 
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_FAMILY_SUCCESS));
   } catch (error) {
