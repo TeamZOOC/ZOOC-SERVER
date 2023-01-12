@@ -9,7 +9,7 @@ import { PetDto } from '../interface/family/PetDto';
 const createPet = async (req: Request, res: Response) => {
   try {
     const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
-    const { location } = image;
+    const location = req.file ? image.location : null;
 
     const familyId = req.params.familyId;
     const { name } = req.body;
