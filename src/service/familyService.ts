@@ -130,6 +130,30 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
 // };
 
 //~ 가족에 반려동물 리스트 등록하기
+const createPets = async (
+  names: string[],
+  photos: string[],
+  familyId: number
+): Promise<PetDto[]> => {
+  const petList: PetDto[] = [];
+
+  for (let i = 0; i < names.length; i++) {
+    const data: PetDto = await prisma.pet.create({
+      data: {
+        name: names[i],
+        photo: photos[i],
+        family: {
+          connect: {
+            id: familyId,
+          },
+        },
+      },
+    });
+    petList.push(data);
+  }
+
+  return petList;
+};
 
 //~ 입력한 가족 코드에 해당하는 가족 정보 불러오기
 const searchFamilyByCode = async (code: string) => {
@@ -200,16 +224,6 @@ const createFamily = async (
       family_id: family.id,
     },
   });
-
-  for (let i = 0; i < petNames.length; i++) {
-    await prisma.pet.create({
-      data: {
-        name: petNames[i],
-        photo: petPhotos[i],
-        family_id: family.id,
-      },
-    });
-  }
 };
 
 const familyService = {
