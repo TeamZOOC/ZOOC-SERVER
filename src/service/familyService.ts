@@ -6,7 +6,6 @@ import { UserDto } from '../interface/user/UserDto';
 import userService from './userService';
 import _ from 'lodash';
 import bcrypt from 'bcryptjs';
-import { Locations } from 'aws-sdk/clients/directconnect';
 const prisma = new PrismaClient();
 
 //~ 사용자의 전체 가족 정보 조회
