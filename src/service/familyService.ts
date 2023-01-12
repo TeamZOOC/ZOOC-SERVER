@@ -147,6 +147,11 @@ const createPets = async (
           },
         },
       },
+      select: {
+        id: true,
+        name: true,
+        photo: true,
+      },
     });
     petList.push(data);
   }
