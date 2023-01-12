@@ -135,11 +135,21 @@ const patchUserNickName = async (userId: number, nickName: string) => {
   return user;
 };
 
+//~ 유저 탈퇴
+const deleteUser = async (userId: number) => {
+  await prisma.user.delete({
+    where: {
+      id: userId,
+    },
+  });
+};
+
 const userService = {
   signInKakao,
   getUser,
   patchUserPhotoAndNickName,
   patchUserNickName,
+  deleteUser,
 };
 
 export default userService;

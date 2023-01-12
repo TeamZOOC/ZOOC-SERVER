@@ -1,5 +1,6 @@
 import { AlarmListResponseDto } from './../interface/alarm/AlarmListResponseDto';
 import { PrismaClient } from '@prisma/client';
+import dayjs from 'dayjs';
 const prisma = new PrismaClient();
 
 //~ 사용자의 전체 알람 조회하기
@@ -26,7 +27,7 @@ const getAlarmList = async (
   alarmList.map((alarm) => {
     const alarmObject = {
       writer: alarm.user_alarm_writer_idTouser,
-      created_time: alarm.created_at,
+      created_time: dayjs(alarm.created_at).format('YYYY.MM.DD'),
     };
     alarms.push(alarmObject);
   });

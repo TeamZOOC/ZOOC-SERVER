@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 import { PetDto } from '../interface/family/PetDto';
+import webhook from '../modules/test-message';
 
 const createPet = async (req: Request, res: Response) => {
   const familyId = req.params.familyId;
@@ -14,9 +15,49 @@ const createPet = async (req: Request, res: Response) => {
     const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
     const location = req.file ? image.location : null;
 
+    const familyId = req.params.familyId;
+    const { name } = req.body;
+
     const data: PetDto = await familyService.createPet(
       name,
       location,
+      +familyId
+    );
+
+    return res
+      .status(sc.CREATED)
+      .send(success(sc.CREATED, rm.CREATE_PET_SUCCESS, data));
+  } catch (error) {
+    console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
+
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
+const createPets = async (req: Request, res: Response) => {
+  if (!req.files)
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
+  try {
+    const familyId = req.params.familyId;
+
+    const locations: string[] = await Promise.all(
+      images.map((image: Express.MulterS3.File) => {
+        return image.location;
+      })
+    );
+
+    const { petNames } = req.body;
+
+    const data: PetDto[] = await familyService.createPets(
+      petNames,
+      locations,
       +familyId
     );
 
@@ -32,14 +73,22 @@ const createPet = async (req: Request, res: Response) => {
 };
 
 const getUserFamily = async (req: Request, res: Response) => {
+  const userId: number = req.body.userId;
   try {
-    const userId: number = req.body.userId;
     const data: FamilyDto[] = await familyService.getUserFamily(userId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_USER_FAMILY_SUCCESS, data));
   } catch (error) {
     console.error(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      userId
+    );
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -47,11 +96,19 @@ const getUserFamily = async (req: Request, res: Response) => {
 };
 
 const getMypage = async (req: Request, res: Response) => {
+  const userId: number = req.body.userId;
   try {
-    const userId: number = req.body.userId;
     const data: MypageResponseDto = await familyService.getMypage(userId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_MYPAGE_SUCCESS, data));
   } catch (error) {
+    console.error(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      userId
+    );
+    webhook.sendWebhook(errorMessage);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -71,13 +128,17 @@ const getFamilyCode = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_FAMILY_CODE_SUCCESS, data));
   } catch (error) {
+    console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
 
-const enrollUsertoFamily = async (req: Request, res: Response) => {
+const enrollUserToFamily = async (req: Request, res: Response) => {
   const { userId, code } = req.body;
 
   // code가 없을 떼
@@ -87,7 +148,7 @@ const enrollUsertoFamily = async (req: Request, res: Response) => {
       .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
   try {
-    const data = await familyService.enrollUsertoFamily(userId, code);
+    const data = await familyService.enrollUserToFamily(userId, code);
     // 성공
     if (data) {
       return res
@@ -113,9 +174,38 @@ const enrollUsertoFamily = async (req: Request, res: Response) => {
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.ALREADY_FAMILY));
   }
+
   return res
     .status(sc.INTERNAL_SERVER_ERROR)
     .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+};
+
+const createFamily = async (req: Request, res: Response) => {
+  if (!req.files)
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+
+  const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
+  try {
+    //const userId: number = req.body.userId;
+
+    const locations: string[] = await Promise.all(
+      images.map((image: Express.MulterS3.File) => {
+        return image.location;
+      })
+    );
+
+    const { petNames } = req.body;
+
+    await familyService.createFamily(1, locations, petNames);
+
+    return res.status(sc.OK).send(success(sc.OK, rm.CREATE_FAMILY_SUCCESS));
+  } catch (error) {
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
 };
 
 const familyController = {
@@ -123,6 +213,8 @@ const familyController = {
   getFamilyCode,
   getUserFamily,
   createPet,
-  enrollUsertoFamily,
+  createPets,
+  enrollUserToFamily,
+  createFamily,
 };
 export default familyController;

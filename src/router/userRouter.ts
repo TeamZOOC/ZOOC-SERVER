@@ -5,11 +5,13 @@ import upload from '../middleware/upload';
 const router: Router = Router();
 
 router.post('/kakao/signin', userController.signInKakao);
+
 router.patch(
   '/profile',
   upload.single('file'),
   auth,
   userController.patchUserProfile
 );
+router.delete('/', auth, userController.deleteUser);
 
 export default router;
