@@ -242,9 +242,10 @@ const getRecord = async (
 
 //* 기록 전체조회
 const getAllRecord = async (
-  familyId: number
+  familyId: number,
+  petId: number
 ): Promise<RecordPreviewResponseDto[]> => {
-  const recordPreviews = await prisma.record.findMany({
+  const records = await prisma.record.findMany({
     where: {
       family_id: familyId,
     },
@@ -252,14 +253,21 @@ const getAllRecord = async (
 
   const recordResponse: RecordPreviewResponseDto[] = [];
 
-  const recordPromises = recordPreviews.map(async (recordPreview) => {
-    const record = await prisma.record.findUnique({
+  const recordPromises = records.map(async (record) => {
+    const petSelectRecord = await prisma.record_pet.findFirst({
       where: {
-        id: recordPreview.id,
+        record_id: record.id,
+        pet_id: petId,
       },
     });
+    if (!petSelectRecord) return null;
 
-    if (!record) throw new Error('no record!');
+    const recordPreview = await prisma.record.findUnique({
+      where: {
+        id: petSelectRecord.record_id,
+      },
+    });
+    if (!recordPreview) return null;
 
     const writer = await prisma.user.findUnique({
       where: {
