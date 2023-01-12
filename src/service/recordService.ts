@@ -14,6 +14,7 @@ const prisma = new PrismaClient();
 import dayjs from 'dayjs';
 import { CommentDto } from '../interface/comment/CommentDto';
 import commentService from './commentService';
+import { RecordPreviewResponseAosDto } from '../interface/record/RecordPreviewResponseAosDto';
 
 //* 완료되지 않은 미션 조회
 const getMission = async (
@@ -340,6 +341,107 @@ const getAllRecord = async (
   return orderedRecordResponse;
 };
 
+//* 기록 전체조회 ( 안드용 )
+const getAllRecordAos = async (
+  familyId: number,
+  petId: number
+): Promise<RecordPreviewResponseAosDto[]> => {
+  const records = await prisma.record.findMany({
+    where: {
+      family_id: familyId,
+    },
+  });
+
+  const recordResponse: RecordPreviewResponseAosDto[] = [];
+
+  const recordPromises = records.map(async (record) => {
+    const petSelectRecord = await prisma.record_pet.findFirst({
+      where: {
+        record_id: record.id,
+        pet_id: petId,
+      },
+    });
+    if (!petSelectRecord) return null;
+
+    const recordPreview = await prisma.record.findUnique({
+      where: {
+        id: petSelectRecord.record_id,
+      },
+    });
+    if (!recordPreview) return null;
+
+    const writer = await prisma.user.findUnique({
+      where: {
+        id: recordPreview.writer,
+      },
+    });
+
+    if (!writer) throw new Error('no record writer!');
+
+    const recordDate = dayjs(recordPreview.created_at).format('M/D');
+
+    const recordDto: RecordDto = {
+      id: recordPreview.id,
+      photo: recordPreview.photo,
+      content: recordPreview.content,
+      date: recordDate,
+      writerPhoto: writer.photo,
+      writerName: writer.nick_name,
+    };
+
+    const commentsResponse: CommentDto[] = [];
+
+    const comments = await prisma.comment.findMany({
+      where: {
+        record_id: recordPreview.id,
+      },
+    });
+
+    const commentPromises = comments.map(async (comment) => {
+      const writer = await prisma.user.findUnique({
+        where: {
+          id: comment.writer,
+        },
+      });
+      if (!writer) throw new Error('no comment writer!');
+
+      const isEmoji = comment.emoji || comment.emoji === 0 ? true : false;
+
+      const commentDate = dayjs(comment.created_at).format('M월 D일');
+
+      const commentDto: CommentDto = {
+        isEmoji: isEmoji,
+        writerId: writer.id,
+        nickName: writer.nick_name,
+        photo: writer.photo,
+        content: comment.content,
+        emoji: comment.emoji,
+        date: commentDate,
+      };
+
+      const existWriter = commentsResponse.find(
+        (commentResponse) => commentResponse.writerId === writer.id
+      );
+      if (!existWriter) commentsResponse.push(commentDto);
+    });
+    await Promise.all(commentPromises);
+
+    const data: RecordPreviewResponseAosDto = {
+      record: recordDto,
+      comments: commentsResponse,
+    };
+
+    recordResponse.push(data);
+  });
+  await Promise.all(recordPromises);
+
+  const orderedRecordResponse = recordResponse.sort(function (a, b) {
+    return b.record.id - a.record.id;
+  });
+
+  return orderedRecordResponse;
+};
+
 const recordService = {
   getMission,
   getAllPet,
@@ -347,6 +449,7 @@ const recordService = {
   createRecord,
   getRecord,
   getAllRecord,
+  getAllRecordAos,
 };
 
 export default recordService;
