@@ -48,7 +48,15 @@ const createPets = async (req: Request, res: Response) => {
 
     const { petNames } = req.body;
 
-    await familyService.createPets(petNames, locations, +familyId);
+    const data: PetDto[] = await familyService.createPets(
+      petNames,
+      locations,
+      +familyId
+    );
+
+    return res
+      .status(sc.CREATED)
+      .send(success(sc.CREATED, rm.CREATE_PET_SUCCESS, data));
   } catch (error) {
     console.log(error);
     return res
