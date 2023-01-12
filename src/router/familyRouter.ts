@@ -16,11 +16,18 @@ router.get('/mypage', familyController.getMypage);
 //? GET family/code/:familyId
 router.get('/code/:familyId', familyController.getFamilyCode);
 
+//? POST family/pets/:familyId
+router.post(
+  '/pets/:familyId',
+  upload.array('files'),
+  familyController.createPets
+);
+
 //? POST family/pet/:familyId
 router.post(
   '/pet/:familyId',
-  upload.array('files'),
-  familyController.createPets
+  upload.single('file'),
+  familyController.createPet
 );
 
 //? POST family/user
