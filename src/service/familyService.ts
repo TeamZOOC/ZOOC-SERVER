@@ -107,26 +107,26 @@ const getMypage = async (userId: number): Promise<MypageResponseDto> => {
   return data;
 };
 
-// //~ 가족에 반려동물 등록하기
-// const createPet = async (
-//   name: string,
-//   photo: string,
-//   familyId: number
-// ): Promise<PetDto> => {
-//   const data: PetDto = await prisma.pet.create({
-//     data: {
-//       name: name,
-//       photo: photo,
-//       family: {
-//         connect: {
-//           id: familyId,
-//         },
-//       },
-//     },
-//   });
+//~ 가족에 반려동물 등록하기
+const createPet = async (
+  name: string,
+  photo: string,
+  familyId: number
+): Promise<PetDto> => {
+  const data: PetDto = await prisma.pet.create({
+    data: {
+      name: name,
+      photo: photo,
+      family: {
+        connect: {
+          id: familyId,
+        },
+      },
+    },
+  });
 
-//   return data;
-// };
+  return data;
+};
 
 //~ 가족에 반려동물 리스트 등록하기
 const createPets = async (
@@ -235,6 +235,7 @@ const createFamily = async (
 const familyService = {
   getUserFamily,
   getMypage,
+  createPet,
   getFamilyPets,
   getFamilyById,
   createPets,
