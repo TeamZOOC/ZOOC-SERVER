@@ -51,6 +51,7 @@ export default {
   BAD_FAMILY_CODE: '잘못된 가족 코드 입력',
   FULL_FAMILY_MEMBER: '가족 인원이 다 찼습니다',
   ALREADY_FAMILY: '이미 가족입니다',
+  CREATE_FAMILY_SUCCESS: '가족 생성 성공',
 
   //댓글
   CREATE_COMMENT_SUCCESS: '일반 댓글 생성 성공',
