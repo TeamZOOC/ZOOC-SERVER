@@ -135,16 +135,40 @@ const getRecord = async (req: Request, res: Response) => {
   }
 };
 
-//? 기록 전체 조회
+//? 기록 전체 조회 (아요)
 const getAllRecord = async (req: Request, res: Response) => {
   try {
-    const { familyId } = req.params;
-    if (!familyId)
+    const { familyId, petId } = req.params;
+    if (!familyId || !petId)
       return res
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
-    const data = await recordService.getAllRecord(+familyId);
+    const data = await recordService.getAllRecord(+familyId, +petId);
+    return res
+      .status(sc.OK)
+      .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
+  } catch (error) {
+    console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
+
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
+//? 기록 전체 조회 (안드)
+const getAllRecordAos = async (req: Request, res: Response) => {
+  try {
+    const { familyId, petId } = req.params;
+    if (!familyId || !petId)
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+
+    const data = await recordService.getAllRecordAos(+familyId, +petId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
@@ -166,5 +190,6 @@ const recordController = {
   createRecord,
   getRecord,
   getAllRecord,
+  getAllRecordAos,
 };
 export default recordController;
