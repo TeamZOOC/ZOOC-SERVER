@@ -7,6 +7,9 @@ const router: Router = Router();
 //? GET family
 router.get('/', familyController.getUserFamily);
 
+//? POST family
+router.post('/', familyController.createFamily);
+
 //? GET family/mypage
 router.get('/mypage', familyController.getMypage);
 
@@ -21,6 +24,6 @@ router.post(
 );
 
 //? POST family/user
-router.post('/user', auth, familyController.enrollUsertoFamily);
+router.post('/user', auth, familyController.enrollUserToFamily);
 
 export default router;
