@@ -8,7 +8,7 @@ const router: Router = Router();
 router.get('/', familyController.getUserFamily);
 
 //? POST family
-router.post('/', familyController.createFamily);
+router.post('/', upload.array('files'), familyController.createFamily);
 
 //? GET family/mypage
 router.get('/mypage', familyController.getMypage);
@@ -19,8 +19,8 @@ router.get('/code/:familyId', familyController.getFamilyCode);
 //? POST family/pet/:familyId
 router.post(
   '/pet/:familyId',
-  upload.single('file'),
-  familyController.createPet
+  upload.array('files'),
+  familyController.createPets
 );
 
 //? POST family/user
