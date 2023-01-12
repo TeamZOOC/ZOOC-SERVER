@@ -8,6 +8,9 @@ import { PetDto } from '../interface/family/PetDto';
 import webhook from '../modules/test-message';
 
 const createPet = async (req: Request, res: Response) => {
+  const familyId = req.params.familyId;
+  const { name } = req.body;
+
   try {
     const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
     const location = req.file ? image.location : null;
