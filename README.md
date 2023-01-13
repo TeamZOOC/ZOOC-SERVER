@@ -6,6 +6,10 @@
 <hr>
 <br/>
 
+## about ZOOC
+<img width="198" alt="image" src="https://user-images.githubusercontent.com/78674565/212325574-b4533a1e-6f39-4a1b-bf17-17f398d0179a.png">
+가족이 기록한 반려동물과의 순간들을 쭉- 추억하는 서비스, ZOOC
+
 ## ERD
 <img width="902" alt="image" src="https://user-images.githubusercontent.com/78674565/212297418-5bb0c7a0-ef7c-4b34-883b-a42d6f0c3995.png">
 
