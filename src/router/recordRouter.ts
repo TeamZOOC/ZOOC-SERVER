@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { recordController } from '../controller';
-import { upload } from '../middleware';
+import { auth, upload } from '../middleware';
 
 const router: Router = Router();
 
@@ -14,7 +14,12 @@ router.get('/pet/:familyId', recordController.getAllPet);
 router.delete('/:recordId', recordController.deleteRecord);
 
 //? POST record/{familyId}?missionId=
-router.post('/:familyId', upload.single('file'), recordController.createRecord);
+router.post(
+  '/:familyId',
+  upload.single('file'),
+  auth,
+  recordController.createRecord
+);
 
 //? GET record/detail/{familyId}/{recordId}
 router.get('/detail/:familyId/:recordId', recordController.getRecord);

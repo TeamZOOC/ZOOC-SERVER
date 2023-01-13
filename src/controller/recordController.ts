@@ -76,6 +76,7 @@ const createRecord = async (req: Request, res: Response) => {
   const userId: number = req.body.userId;
 
   try {
+    console.log(req.file);
     const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
     const { location } = image;
     const { content, pet } = req.body;
@@ -99,7 +100,9 @@ const createRecord = async (req: Request, res: Response) => {
       pet,
       mission
     );
-    return res.status(sc.OK).send(success(sc.OK, rm.CREATE_RECORD_SUCCESS));
+    return res
+      .status(sc.CREATED)
+      .send(success(sc.CREATED, rm.CREATE_RECORD_SUCCESS));
   } catch (error) {
     console.error(error);
     const errorMessage = webhook.slackMessage(
