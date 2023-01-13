@@ -11,7 +11,9 @@ const signInKakao = async (req: Request, res: Response) => {
 
   const jwtToken = await userService.signInKakao(kakaoToken);
 
-  return res.status(200).json({ jwtToken: jwtToken });
+  return res
+    .status(200)
+    .send(success(sc.OK, rm.SIGNIN_SUCCESS, { jwtToken: jwtToken }));
 };
 
 //~ 회원 탈퇴

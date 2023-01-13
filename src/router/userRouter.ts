@@ -9,8 +9,9 @@ router.post('/kakao/signin', userController.signInKakao);
 router.patch(
   '/profile',
   upload.single('file'),
+  auth,
   userController.patchUserProfile
 );
-router.delete('/', userController.deleteUser);
+router.delete('/', auth, userController.deleteUser);
 
 export default router;
