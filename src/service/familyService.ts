@@ -113,6 +113,13 @@ const createPet = async (
   photo: string | null,
   familyId: number
 ): Promise<PetDto> => {
+  const pets = await prisma.pet.findMany({
+    where: {
+      family_id: familyId,
+    },
+  });
+  if (pets.length > 3) throw new Error('Too many pets in family!');
+
   const data: PetDto = await prisma.pet.create({
     data: {
       name: name,
