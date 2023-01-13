@@ -1,5 +1,6 @@
 export interface CommentDto {
   isEmoji: boolean;
+  writerId: number;
   nickName: string;
   photo: string | null;
   content: string | null;

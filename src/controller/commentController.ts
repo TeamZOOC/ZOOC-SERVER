@@ -13,7 +13,7 @@ const createComment = async (req: Request, res: Response) => {
     const { content } = req.body;
 
     const data: CommentDto[] = await commentService.createComment(
-      1,
+      userId,
       +recordId,
       content
     );
@@ -45,7 +45,7 @@ const createEmojiComment = async (req: Request, res: Response) => {
     const { emoji } = req.body;
 
     const data: CommentDto[] = await commentService.createEmojiComment(
-      1,
+      userId,
       +recordId,
       emoji
     );

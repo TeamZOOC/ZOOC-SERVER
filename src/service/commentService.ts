@@ -26,6 +26,7 @@ const getAllComment = async (recordId: number): Promise<CommentDto[]> => {
 
     const data: CommentDto = {
       isEmoji: isEmoji,
+      writerId: writer.id,
       nickName: writer.nick_name,
       photo: writer.photo,
       content: comment.content,
