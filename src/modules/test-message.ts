@@ -1,6 +1,6 @@
 import Slack from 'slack-node';
 const webhookUri =
-  'https://hooks.slack.com/services/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'; // Webhook URL
+  'https://hooks.slack.com/services/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'; // Webhook URL
 
 const slack = new Slack();
 slack.setWebhook(webhookUri);
@@ -11,7 +11,7 @@ const sendWebhook = async (message: string) => {
       text: message,
     },
     function (err, response) {
-      console.log(response);
+      // console.log(response);
     }
   );
 };

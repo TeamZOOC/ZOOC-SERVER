@@ -12,7 +12,7 @@
     "db:pull": "npx prisma db pull",
     "db:push": "npx prisma db push",
     "generate": "npx prisma generate",
-    "test": "mocha -r ts-node/register ./src/test/family.spec.ts"
+    "test": "mocha -r ts-node/register ./src/test/* -exit"
   },
   "dependencies": {
     "@prisma/client": "^4.8.0",
