@@ -18,4 +18,5 @@ export default {
   //?로그인
   KAKAO_ID: process.env.KAKAO_ID as string,
   JWT_SECRET: process.env.JWT_SECRET as string,
+  TEST_TOKEN: process.env.TEST_TOKEN as string,
 };
