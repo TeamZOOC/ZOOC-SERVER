@@ -7,7 +7,7 @@
 <br/>
 
 ## ERD
-![image](https://user-images.githubusercontent.com/78674565/210372613-275b4ce2-04a5-4ba5-bb75-d45ef83c8b73.png)
+<img width="902" alt="image" src="https://user-images.githubusercontent.com/78674565/212297418-5bb0c7a0-ef7c-4b34-883b-a42d6f0c3995.png">
 
 ## Role
 
@@ -16,6 +16,16 @@
 - eslint, prettier 설정
 - github 템플릿 설정
 - kakao 소셜 로그인
+- 가족 만들기 api
+- 미션 조회 api
+- 펫 조회 api
+- 기록 작성하기 api
+- 기록 상세보기 api
+- 기록 전체보기 api
+- 기록 삭제하기 api
+- 댓글 작성하기 api
+- 이모지 댓글 작성하기 api
+- 댓글 삭제하기 api
 
 ### 정준서
 - github actions, s3, codedeploy로 CI/CD 구현
@@ -24,6 +34,15 @@
 - S3 파일 업로드 미들웨어
 - 마이페이지 정보 불러오기 api
 - 초대코드 불러오기 api
+- 알림 조회하기 api
+- 가족 정보 불러오기 api
+- 반려동물 등록하기 api
+- 가족에 유저 등록하기 api
+- kakao 로그인 api
+- 사용자 프로필 수정 api
+- 회원 탈퇴 api
+- 허스키 설정
+- 슬랙 웹훅 설정
 
 ### 공통
 - DB 설계
