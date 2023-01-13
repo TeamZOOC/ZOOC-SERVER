@@ -7,8 +7,24 @@
 <br/>
 
 ## about ZOOC
-<img width="198" alt="image" src="https://user-images.githubusercontent.com/78674565/212325574-b4533a1e-6f39-4a1b-bf17-17f398d0179a.png">
+<img width="198" alt="image" src="https://user-images.githubusercontent.com/78674565/212325574-b4533a1e-6f39-4a1b-bf17-17f398d0179a.png">   
 가족이 기록한 반려동물과의 순간들을 쭉- 추억하는 서비스, ZOOC
+<br>
+<br>
+1. 함께 기록하기
+<br>
+반려동물과의 일상을 간편하게 기록하고 소중한 순간을 놓치지 않도록 미션과 가이드라인을 제공합니다.
+<br>
+2. 함께 아카이빙하기
+<br>
+가족 구성원 전체의 기록을 한 곳에 아카이빙 할 수 있으며 이 기록지를 넘겨보며 새로운 방식의 추억 경험을 제공합니다.
+<br>
+3. 함께 다시보기 
+<br>
+사진과 함께 그 순간의 상황, 가족 간의 대화를 기록하여 순간의 감정까지 추억할 수 있게 해줍니다.   
+<br>
+<br>
+<br>
 
 ## 서버 아키텍쳐
 <img width="365" alt="image" src="https://user-images.githubusercontent.com/78674565/212330182-f1749d21-2860-43b4-878b-f12836009160.png">
