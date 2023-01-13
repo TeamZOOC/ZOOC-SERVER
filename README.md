@@ -10,6 +10,9 @@
 <img width="198" alt="image" src="https://user-images.githubusercontent.com/78674565/212325574-b4533a1e-6f39-4a1b-bf17-17f398d0179a.png">
 가족이 기록한 반려동물과의 순간들을 쭉- 추억하는 서비스, ZOOC
 
+## 서버 아키텍쳐
+<img width="365" alt="image" src="https://user-images.githubusercontent.com/78674565/212330182-f1749d21-2860-43b4-878b-f12836009160.png">
+
 ## ERD
 <img width="902" alt="image" src="https://user-images.githubusercontent.com/78674565/212297418-5bb0c7a0-ef7c-4b34-883b-a42d6f0c3995.png">
 
@@ -460,3 +463,63 @@ git flow 일부 사용.
 ## 전체 API 로직 구현 진척도
 
 <img width="422" alt="image" src="https://user-images.githubusercontent.com/78674565/210383164-dcd9e603-6f27-4123-91c8-4b58d10fe85c.png">
+
+### package.json
+```json{
+  "name": "ZOOC-SERVER",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/TeamZOOC/ZOOC-SERVER.git",
+  "author": "dltjdn <hana40004@naver.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon",
+    "build": "tsc",
+    "lint": "eslint ./src",
+    "db:pull": "npx prisma db pull",
+    "db:push": "npx prisma db push",
+    "generate": "npx prisma generate",
+    "test": "mocha -r ts-node/register ./src/test/family.spec.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.8.0",
+    "aws-sdk": "^2.1286.0",
+    "axios": "^1.2.2",
+    "bcryptjs": "^2.4.3",
+    "dayjs": "^1.11.7",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "lodash": "^4.17.21",
+    "multer": "^1.4.5-lts.1",
+    "multer-s3": "^3.0.1",
+    "prisma": "^4.8.0",
+    "slack-node": "^0.1.8",
+    "supertest": "^6.3.3",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.4",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/express": "^4.17.15",
+    "@types/jsonwebtoken": "^9.0.0",
+    "@types/lodash": "^4.14.191",
+    "@types/mocha": "^10.0.1",
+    "@types/multer": "^1.4.7",
+    "@types/multer-s3": "^3.0.0",
+    "@types/node": "^18.11.17",
+    "@types/supertest": "^2.0.12",
+    "@types/slack-node": "^0.1.4",
+    "@typescript-eslint/eslint-plugin": "^5.47.1",
+    "@typescript-eslint/parser": "^5.47.1",
+    "chai": "^4.3.7",
+    "eslint": "^8.30.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.20",
+    "prettier": "2.8.1",
+    "typescript": "^4.9.4"
+  }
+}
+```
