@@ -189,7 +189,7 @@ const getAllRecordAos = async (req: Request, res: Response) => {
 //? 기록 상세 조회 ( NEW !!!!)
 const getRecordNew = async (req: Request, res: Response) => {
   try {
-    const { familyId, recordId, petId } = req.params;
+    const { familyId, petId, recordId } = req.params;
     if (!recordId)
       return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
 

@@ -464,28 +464,38 @@ const getRecordNew = async (
         pet_id: petId,
       },
     });
-    if (!petSelectRecord) return null;
-    const x = await prisma.record.findUnique({
-      where: {
-        id: petSelectRecord.record_id,
-      },
-    });
+    if (petSelectRecord) {
+      const x = await prisma.record.findUnique({
+        where: {
+          id: petSelectRecord.record_id,
+        },
+      });
 
-    if (!x) return null;
-    petSelectOrderedRecord.push(x);
+      if (!x) return null;
+      petSelectOrderedRecord.push(x);
+    }
   });
   await Promise.all(recordPromises);
 
-  const idx = petSelectOrderedRecord.findIndex(
+  if (petSelectOrderedRecord.length === 0) throw new Error('no record!');
+
+  const orderedRecordResponse = petSelectOrderedRecord.sort(function (a, b) {
+    return b.id - a.id;
+  });
+
+  const y = orderedRecordResponse.find((record) => record.id === recordId);
+  if (y === undefined) throw new Error('no record!');
+
+  const idx = orderedRecordResponse.findIndex(
     (record) => record.id === recordId
   );
 
   let leftId = null;
   let rightId = null;
 
-  if (idx > 0) leftId = petSelectOrderedRecord[idx - 1].id;
-  if (idx < petSelectOrderedRecord.length - 1)
-    rightId = petSelectOrderedRecord[idx + 1].id;
+  if (idx > 0) leftId = orderedRecordResponse[idx - 1].id;
+  if (idx < orderedRecordResponse.length - 1)
+    rightId = orderedRecordResponse[idx + 1].id;
 
   const record = await prisma.record.findUnique({
     where: {
