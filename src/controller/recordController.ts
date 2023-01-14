@@ -186,6 +186,25 @@ const getAllRecordAos = async (req: Request, res: Response) => {
   }
 };
 
+//? 기록 상세 조회 ( NEW !!!!)
+const getRecordNew = async (req: Request, res: Response) => {
+  try {
+    const { familyId, recordId, petId } = req.params;
+    if (!recordId)
+      return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
+
+    const data = await recordService.getRecordNew(+familyId, +recordId, +petId);
+    return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
+  } catch (error) {
+    console.error(error);
+    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    webhook.sendWebhook(errorMessage);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const recordController = {
   getMission,
   getAllPet,
@@ -194,5 +213,6 @@ const recordController = {
   getRecord,
   getAllRecord,
   getAllRecordAos,
+  getRecordNew,
 };
 export default recordController;

@@ -4,7 +4,7 @@ import {
 } from './../interface/record/RecordPreviewResponseDto';
 import { RecordResponseDto } from '../interface/record/RecordResponseDto';
 import { RecordDto } from './../interface/record/RecordDto';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, record } from '@prisma/client';
 import _ from 'lodash';
 import { PetDto } from '../interface/family/PetDto';
 import { MissionDto } from '../interface/record/MissionDto';
@@ -441,6 +441,93 @@ const getAllRecordAos = async (
   return orderedRecordResponse;
 };
 
+//* 기록 상세조회 ( NEW !!!!!)
+const getRecordNew = async (
+  familyId: number,
+  recordId: number,
+  petId: number
+): Promise<RecordResponseDto> => {
+  const orderedRecord = await prisma.record.findMany({
+    where: {
+      family_id: familyId,
+    },
+    orderBy: {
+      created_at: 'desc',
+    },
+  });
+  const petSelectOrderedRecord: record[] = [];
+
+  const recordPromises = orderedRecord.map(async (record) => {
+    const petSelectRecord = await prisma.record_pet.findFirst({
+      where: {
+        record_id: record.id,
+        pet_id: petId,
+      },
+    });
+    if (!petSelectRecord) return null;
+    const x = await prisma.record.findUnique({
+      where: {
+        id: petSelectRecord.record_id,
+      },
+    });
+
+    if (!x) return null;
+    petSelectOrderedRecord.push(x);
+  });
+  await Promise.all(recordPromises);
+
+  const idx = petSelectOrderedRecord.findIndex(
+    (record) => record.id === recordId
+  );
+
+  let leftId = null;
+  let rightId = null;
+
+  if (idx > 0) leftId = petSelectOrderedRecord[idx - 1].id;
+  if (idx < petSelectOrderedRecord.length - 1)
+    rightId = petSelectOrderedRecord[idx + 1].id;
+
+  const record = await prisma.record.findUnique({
+    where: {
+      id: recordId,
+    },
+  });
+
+  if (!record) throw new Error('no record!');
+
+  const writer = await prisma.user.findUnique({
+    where: {
+      id: record.writer,
+    },
+  });
+
+  if (!writer) throw new Error('no record writer!');
+
+  const recordDate = dayjs(record.created_at).format('M월 D일');
+
+  const recordDto: RecordDto = {
+    id: recordId,
+    photo: record.photo,
+    content: record.content,
+    date: recordDate,
+    writerPhoto: writer.photo,
+    writerName: writer.nick_name,
+  };
+
+  const recentComments: CommentDto[] = await commentService.getAllComment(
+    recordId
+  );
+
+  const recordResponseDto: RecordResponseDto = {
+    leftId: leftId,
+    rightId: rightId,
+    record: recordDto,
+    comments: recentComments,
+  };
+
+  return recordResponseDto;
+};
+
 const recordService = {
   getMission,
   getAllPet,
@@ -449,6 +536,7 @@ const recordService = {
   getRecord,
   getAllRecord,
   getAllRecordAos,
+  getRecordNew,
 };
 
 export default recordService;
