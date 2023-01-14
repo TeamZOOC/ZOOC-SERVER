@@ -480,6 +480,8 @@ git flow 일부 사용.
 
 <img width="422" alt="image" src="https://user-images.githubusercontent.com/78674565/210383164-dcd9e603-6f27-4123-91c8-4b58d10fe85c.png">
 
+Notion API 명세서 : https://wonderful-kidney-f28.notion.site/API-2be498171f164bfbb3ee14ba9e08787e
+
 ### package.json
 ```json{
   "name": "ZOOC-SERVER",
