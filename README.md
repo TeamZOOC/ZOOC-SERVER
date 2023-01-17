@@ -6,7 +6,7 @@
 <hr>
 <br/>
 
-## about ZOOC
+## About ZOOC
 <img width="198" alt="image" src="https://user-images.githubusercontent.com/78674565/212325574-b4533a1e-6f39-4a1b-bf17-17f398d0179a.png">   
 가족이 기록한 반려동물과의 순간들을 쭉- 추억하는 서비스, ZOOC
 <br>
@@ -479,6 +479,8 @@ git flow 일부 사용.
 ## 전체 API 로직 구현 진척도
 
 <img width="422" alt="image" src="https://user-images.githubusercontent.com/78674565/210383164-dcd9e603-6f27-4123-91c8-4b58d10fe85c.png">
+
+Notion API 명세서 : https://wonderful-kidney-f28.notion.site/API-2be498171f164bfbb3ee14ba9e08787e
 
 ### package.json
 ```json{
