@@ -21,6 +21,9 @@ const getAlarmList = async (
         },
       },
     },
+    orderBy: {
+      created_at: 'desc',
+    },
   });
 
   const alarms: AlarmListResponseDto[] = [];
