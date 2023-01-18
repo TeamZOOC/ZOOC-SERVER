@@ -79,10 +79,14 @@ const createRecord = async (req: Request, res: Response) => {
     console.log(req.file);
     const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
     const { location } = image;
-    const { content, pet } = req.body;
+    const { content } = req.body;
+    let { pet } = req.body;
     const { familyId } = req.params;
     const { missionId } = req.query;
     let mission: number | undefined;
+
+    // 안드로이드를 위한 pet 하나일 때
+    if (!Array.isArray(pet)) pet = new Array(pet);
 
     if (!familyId)
       return res
