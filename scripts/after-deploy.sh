@@ -5,3 +5,4 @@ cd $REPOSITORY
 
 sudo /usr/bin/yarn
 sudo /usr/bin/pm2 start dist
+sudo /usr/bin/pm2 logs
