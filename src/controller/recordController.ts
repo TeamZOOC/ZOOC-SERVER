@@ -85,7 +85,7 @@ const createRecord = async (req: Request, res: Response) => {
     const { missionId } = req.query;
     let mission: number | undefined;
 
-    // 안드로이드를 위한 pet 하나일 때
+    // 안드로이드를 위한 pet 하나일 때 배열로 변경하는 코드
     if (!Array.isArray(pet)) pet = new Array(pet);
 
     if (!familyId)
