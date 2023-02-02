@@ -81,4 +81,5 @@ const commentController = {
   createEmojiComment,
   deleteComment,
 };
+
 export default commentController;
