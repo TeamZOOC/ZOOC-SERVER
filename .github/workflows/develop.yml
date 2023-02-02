@@ -29,6 +29,12 @@ jobs:
           pwd
           touch .env
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+          echo S3_ACCESS_KEY=${{ secrets.S3_ACCESS_KEY }} >> .env
+          echo S3_SECRET_KEY=${{ secrets.S3_SECRET_KEY }} >> .env
+          echo S3_BUCKET=${{ secrets.S3_BUCKET }} >> .env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+          echo JWT_ALGO=${{ secrets.JWT_ALGO }} >> .env
+          echo TEST_TOKEN=${{ secrets.TEST_TOKEN }} >> .env
           cat .env
       
       - name: build server files
