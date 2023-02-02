@@ -3,3 +3,4 @@ export interface AlarmListResponseDto {
   writer: UserDto;
   created_time: string;
 }
+
