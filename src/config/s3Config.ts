@@ -9,5 +9,4 @@ const s3: S3Client = new S3Client({
   },
 });
 
-console.log(config.s3AccessKey, config.s3SecretKey);
 export default s3;
