@@ -19,20 +19,30 @@ const uploadImage = async (req: Request, res: Response) => {
   return res
     .status(sc.CREATED)
     .send(success(sc.CREATED, rm.IMAGE_UPLOAD_SUCCESS, location));
+};
 
-  //   const data = await imageService.uploadImage(location);
+const uploadImages = async (req: Request, res: Response) => {
+  const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
 
-  //   if (!data)
-  //     return res
-  //       .status(sc.BAD_REQUEST)
-  //       .send(fail(sc.BAD_REQUEST, rm.CREATE_IMAGE_FAIL));
-  //   return res
-  //     .status(sc.CREATED)
-  //     .send(success(sc.CREATED, rm.CREATE_IMAGE_SUCCESS, data));
+  const locations: string[] = await Promise.all(
+    images.map((image: Express.MulterS3.File) => {
+      return image.location;
+    })
+  );
+
+  if (!locations)
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.IMAGE_UPLOAD_SUCCESS));
+
+  return res
+    .status(sc.CREATED)
+    .send(success(sc.CREATED, rm.IMAGE_UPLOAD_SUCCESS, locations));
 };
 
 const imageController = {
   uploadImage,
+  uploadImages,
 };
 
 export default imageController;
