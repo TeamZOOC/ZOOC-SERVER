@@ -63,4 +63,8 @@ export default {
 
   //알람
   GET_ALARM_LIST_SUCCESS: '알람 리스트 조회 성공',
+
+  //이미지
+  IMAGE_UPLOAD_FAIL: '이미지 업로드 실패',
+  IMAGE_UPLOAD_SUCCESS: '이미지 업로드 성공',
 };
