@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 
-//! 이미지 업로드 api
+//! 하나의 이미지 업로드 api
 const uploadImage = async (req: Request, res: Response) => {
   const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
   const { location } = image;
@@ -21,6 +21,7 @@ const uploadImage = async (req: Request, res: Response) => {
     .send(success(sc.CREATED, rm.IMAGE_UPLOAD_SUCCESS, location));
 };
 
+//! 여러 이미지 업로드 api
 const uploadImages = async (req: Request, res: Response) => {
   const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
 
