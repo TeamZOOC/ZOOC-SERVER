@@ -9,6 +9,9 @@ const getAllComment = async (recordId: number): Promise<CommentDto[]> => {
     where: {
       record_id: recordId,
     },
+    orderBy: {
+      created_at: 'asc',
+    },
   });
   const recentComments: CommentDto[] = [];
 
