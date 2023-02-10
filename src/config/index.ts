@@ -19,4 +19,7 @@ export default {
   KAKAO_ID: process.env.KAKAO_ID as string,
   JWT_SECRET: process.env.JWT_SECRET as string,
   TEST_TOKEN: process.env.TEST_TOKEN as string,
+
+  //? 슬랙 웹훅
+  SLACK_WEBHOOK_URI: process.env.SLACK_WEBHOOK_URI as string,
 };
