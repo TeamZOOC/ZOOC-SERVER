@@ -1,13 +1,12 @@
 import { MypageResponseDto } from './../interface/family/MypageResponseDto';
 import { FamilyDto } from './../interface/family/FamilyDto';
 import { familyService } from '../service';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 import { PetDto } from '../interface/family/PetDto';
-import webhook from '../modules/test-message';
 
-const createPet = async (req: Request, res: Response) => {
+const createPet = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const image: Express.MulterS3.File = req.file as Express.MulterS3.File;
     const location = req.file ? image.location : null;
@@ -25,14 +24,7 @@ const createPet = async (req: Request, res: Response) => {
       .status(sc.CREATED)
       .send(success(sc.CREATED, rm.CREATE_PET_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(
-      req.method,
-      req.url,
-      error,
-      req.body.userId
-    );
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -40,7 +32,7 @@ const createPet = async (req: Request, res: Response) => {
   }
 };
 
-const createPets = async (req: Request, res: Response) => {
+const createPets = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.files)
     return res
       .status(sc.BAD_REQUEST)
@@ -67,15 +59,7 @@ const createPets = async (req: Request, res: Response) => {
       .status(sc.CREATED)
       .send(success(sc.CREATED, rm.CREATE_PET_SUCCESS, data));
   } catch (error) {
-    console.log(error);
-
-    const errorMessage = webhook.slackMessage(
-      req.method,
-      req.url,
-      error,
-      req.body.userId
-    );
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -83,7 +67,11 @@ const createPets = async (req: Request, res: Response) => {
   }
 };
 
-const getUserFamily = async (req: Request, res: Response) => {
+const getUserFamily = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const userId: number = req.body.userId;
   try {
     const data: FamilyDto[] = await familyService.getUserFamily(userId);
@@ -91,14 +79,7 @@ const getUserFamily = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_USER_FAMILY_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(
-      req.method,
-      req.url,
-      error,
-      userId
-    );
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -106,27 +87,24 @@ const getUserFamily = async (req: Request, res: Response) => {
   }
 };
 
-const getMypage = async (req: Request, res: Response) => {
+const getMypage = async (req: Request, res: Response, next: NextFunction) => {
   const userId: number = req.body.userId;
   try {
     const data: MypageResponseDto = await familyService.getMypage(userId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_MYPAGE_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(
-      req.method,
-      req.url,
-      error,
-      userId
-    );
-    webhook.sendWebhook(errorMessage);
+    next(error);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
 
-const getFamilyCode = async (req: Request, res: Response) => {
+const getFamilyCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const familyId = req.params.familyId;
   if (!familyId)
     return res
@@ -139,14 +117,7 @@ const getFamilyCode = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_FAMILY_CODE_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(
-      req.method,
-      req.url,
-      error,
-      req.body.userId
-    );
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -196,7 +167,11 @@ const enrollUserToFamily = async (req: Request, res: Response) => {
     .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
 };
 
-const createFamily = async (req: Request, res: Response) => {
+const createFamily = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   if (!req.files)
     return res
       .status(sc.BAD_REQUEST)
@@ -218,14 +193,7 @@ const createFamily = async (req: Request, res: Response) => {
 
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_FAMILY_SUCCESS));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(
-      req.method,
-      req.url,
-      error,
-      req.body.userId
-    );
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
