@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.19.0]
-    
+
     steps:
       - name: Checkout source code.
         uses: actions/checkout@v2
@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      
+
       - name: create env file
         working-directory: ./
         run: |
@@ -35,8 +35,9 @@ jobs:
           echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
           echo JWT_ALGO=${{ secrets.JWT_ALGO }} >> .env
           echo TEST_TOKEN=${{ secrets.TEST_TOKEN }} >> .env
+          echo SLACK_WEBHOOK_URI=${{ secrets.SLACK_WEBHOOK_URI }} >> .env
           cat .env
-      
+
       - name: build server files
         working-directory: ./
         run: |
@@ -53,7 +54,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
-      
+
       - name: upload to S3
         run: aws s3 cp --region ap-northeast-2 ./zooc.zip s3://zooc-bucket/deploy/
 
