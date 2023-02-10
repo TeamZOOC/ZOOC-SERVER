@@ -68,6 +68,15 @@ const createPets = async (req: Request, res: Response) => {
       .send(success(sc.CREATED, rm.CREATE_PET_SUCCESS, data));
   } catch (error) {
     console.log(error);
+
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      req.body.userId
+    );
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -131,7 +140,12 @@ const getFamilyCode = async (req: Request, res: Response) => {
       .send(success(sc.OK, rm.GET_FAMILY_CODE_SUCCESS, data));
   } catch (error) {
     console.error(error);
-    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      req.body.userId
+    );
     webhook.sendWebhook(errorMessage);
 
     return res
@@ -204,6 +218,15 @@ const createFamily = async (req: Request, res: Response) => {
 
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_FAMILY_SUCCESS));
   } catch (error) {
+    console.error(error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      req.body.userId
+    );
+    webhook.sendWebhook(errorMessage);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
