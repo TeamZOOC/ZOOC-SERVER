@@ -24,7 +24,7 @@ const slackMessage = (
   return `[에러] [${method}] ${originalUrl} ${
     uid ? `[유저아이디]: ${uid}` : 'req.user 없음'
   } 
-  ${error}`;
+  ${error.message}`;
 };
 
 const webhook = { sendWebhook, slackMessage };
