@@ -26,7 +26,12 @@ const createPet = async (req: Request, res: Response) => {
       .send(success(sc.CREATED, rm.CREATE_PET_SUCCESS, data));
   } catch (error) {
     console.error(error);
-    const errorMessage = webhook.slackMessage(req.method, req.url, error);
+    const errorMessage = webhook.slackMessage(
+      req.method,
+      req.url,
+      error,
+      req.body.userId
+    );
     webhook.sendWebhook(errorMessage);
 
     return res
