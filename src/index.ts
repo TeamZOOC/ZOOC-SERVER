@@ -11,6 +11,8 @@ app.use('/', router);
 
 //* 에러 핸들링
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(error);
+
   const errorMessage = webhook.slackMessage(
     req.method,
     req.url,
