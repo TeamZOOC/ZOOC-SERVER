@@ -37,7 +37,6 @@ const createPets = async (req: Request, res: Response, next: NextFunction) => {
   const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
 
   const errors = validationResult(req);
-  console.log(errors);
   if (!errors.isEmpty()) {
     return res
       .status(sc.BAD_REQUEST)
