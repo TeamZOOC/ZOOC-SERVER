@@ -6,14 +6,14 @@ const router: Router = Router();
 //? POST comment/{recordId}
 router.post(
   '/:recordId',
-  [param('recordId').isNumeric(), body('content').notEmpty()],
+  [param('recordId').isNumeric(), body('content').trim().notEmpty()],
   commentController.createComment
 );
 
 //? POST comment/emoji/{recordId}
 router.post(
   '/emoji/:recordId',
-  [param('recordId').isNumeric(), body('emoji').notEmpty()],
+  [param('recordId').isNumeric(), body('emoji').trim().notEmpty()],
   commentController.createEmojiComment
 );
 
