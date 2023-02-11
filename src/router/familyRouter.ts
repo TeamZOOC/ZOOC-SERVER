@@ -12,7 +12,7 @@ router.get('/', familyController.getUserFamily);
 router.post(
   '/',
   upload.array('files'),
-  [body('petNames').trim().notEmpty()],
+  [body('petNames').notEmpty()],
   auth,
   familyController.createFamily
 );
@@ -27,6 +27,7 @@ router.get('/code/:familyId', familyController.getFamilyCode);
 router.post(
   '/pets/:familyId',
   upload.array('files'),
+  [body('petNames').notEmpty()],
   auth,
   familyController.createPets
 );

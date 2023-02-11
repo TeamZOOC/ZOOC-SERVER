@@ -34,11 +34,16 @@ const createPet = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const createPets = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.files)
+  const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
+
+  const errors = validationResult(req);
+  console.log(errors);
+  if (!errors.isEmpty()) {
     return res
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
-  const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
+  }
+
   try {
     const familyId = req.params.familyId;
 
