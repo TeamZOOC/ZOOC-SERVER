@@ -1,7 +1,6 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
-import webhook from '../modules/test-message';
 import userService from '../service/userService';
 
 const signInKakao = async (req: Request, res: Response) => {
@@ -17,20 +16,25 @@ const signInKakao = async (req: Request, res: Response) => {
 };
 
 //~ 회원 탈퇴
-const deleteUser = async (req: Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   const userId: number = req.body.userId;
   try {
     await userService.deleteUser(userId);
     return res.status(sc.OK).send(success(sc.OK, rm.DELETE_USER_SUCCESS));
   } catch (error) {
-    console.error(error);
+    next(error);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
   }
 };
 
-const patchUserProfile = async (req: Request, res: Response) => {
+const patchUserProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const { userId, nickName } = req.body;
   const is_photo = req.query.photo === 'true' ? true : false;
   try {
@@ -70,14 +74,7 @@ const patchUserProfile = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.UPDATE_USER_PROFILE_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(
-      req.method,
-      req.url,
-      error,
-      userId
-    );
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
