@@ -2,13 +2,20 @@ import { Router } from 'express';
 import { familyController } from '../controller';
 import auth from '../middleware/auth';
 import { upload } from '../middleware';
+import { body } from 'express-validator';
 const router: Router = Router();
 
 //? GET family
 router.get('/', familyController.getUserFamily);
 
 //? POST family
-router.post('/', upload.array('files'), auth, familyController.createFamily);
+router.post(
+  '/',
+  upload.array('files'),
+  [body('petNames').trim().notEmpty()],
+  auth,
+  familyController.createFamily
+);
 
 //? GET family/mypage
 router.get('/mypage', familyController.getMypage);

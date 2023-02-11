@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 import { PetDto } from '../interface/family/PetDto';
+import { validationResult } from 'express-validator';
 
 const createPet = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -172,10 +173,12 @@ const createFamily = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (!req.files)
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
     return res
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
 
   const images: Express.MulterS3.File[] = req.files as Express.MulterS3.File[];
   try {
