@@ -1,11 +1,10 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
-import webhook from '../modules/test-message';
 import recordService from '../service/recordService';
 
 //? 완료하지 않은 미션 전체조회
-const getMission = async (req: Request, res: Response) => {
+const getMission = async (req: Request, res: Response, next: NextFunction) => {
   const userId: number = req.body.userId;
 
   try {
@@ -18,14 +17,7 @@ const getMission = async (req: Request, res: Response) => {
     const data = await recordService.getMission(userId, +familyId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_MISSION_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(
-      req.method,
-      req.url,
-      error,
-      userId
-    );
-    webhook.sendWebhook(errorMessage);
+    next(error);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -33,7 +25,7 @@ const getMission = async (req: Request, res: Response) => {
 };
 
 //? 모든 펫 조회
-const getAllPet = async (req: Request, res: Response) => {
+const getAllPet = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const familyId = req.params.familyId;
     if (!familyId)
@@ -44,9 +36,8 @@ const getAllPet = async (req: Request, res: Response) => {
     const data = await recordService.getAllPet(+familyId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_ALL_PET_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(req.method, req.url, error);
-    webhook.sendWebhook(errorMessage);
+    next(error);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -54,16 +45,18 @@ const getAllPet = async (req: Request, res: Response) => {
 };
 
 //? 기록 삭제하기
-const deleteRecord = async (req: Request, res: Response) => {
+const deleteRecord = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { recordId } = req.params;
 
     await recordService.deleteRecord(+recordId);
     return res.status(sc.OK).send(success(sc.OK, rm.DELETE_RECORD_SUCCESS));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(req.method, req.url, error);
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -72,7 +65,11 @@ const deleteRecord = async (req: Request, res: Response) => {
 };
 
 //? 기록 작성하기
-const createRecord = async (req: Request, res: Response) => {
+const createRecord = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const userId: number = req.body.userId;
 
   try {
@@ -108,14 +105,7 @@ const createRecord = async (req: Request, res: Response) => {
       .status(sc.CREATED)
       .send(success(sc.CREATED, rm.CREATE_RECORD_SUCCESS));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(
-      req.method,
-      req.url,
-      error,
-      userId
-    );
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -124,7 +114,7 @@ const createRecord = async (req: Request, res: Response) => {
 };
 
 //? 기록 상세 조회
-const getRecord = async (req: Request, res: Response) => {
+const getRecord = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { familyId, recordId } = req.params;
     if (!recordId)
@@ -133,9 +123,8 @@ const getRecord = async (req: Request, res: Response) => {
     const data = await recordService.getRecord(+familyId, +recordId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(req.method, req.url, error);
-    webhook.sendWebhook(errorMessage);
+    next(error);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
@@ -143,7 +132,11 @@ const getRecord = async (req: Request, res: Response) => {
 };
 
 //? 기록 전체 조회 (아요)
-const getAllRecord = async (req: Request, res: Response) => {
+const getAllRecord = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { familyId, petId } = req.params;
     if (!familyId || !petId)
@@ -156,9 +149,7 @@ const getAllRecord = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(req.method, req.url, error);
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -167,7 +158,11 @@ const getAllRecord = async (req: Request, res: Response) => {
 };
 
 //? 기록 전체 조회 (안드)
-const getAllRecordAos = async (req: Request, res: Response) => {
+const getAllRecordAos = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { familyId, petId } = req.params;
     if (!familyId || !petId)
@@ -180,9 +175,7 @@ const getAllRecordAos = async (req: Request, res: Response) => {
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(req.method, req.url, error);
-    webhook.sendWebhook(errorMessage);
+    next(error);
 
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
@@ -191,7 +184,11 @@ const getAllRecordAos = async (req: Request, res: Response) => {
 };
 
 //? 기록 상세 조회 ( NEW !!!!)
-const getRecordNew = async (req: Request, res: Response) => {
+const getRecordNew = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { familyId, petId, recordId } = req.params;
     if (!recordId)
@@ -200,9 +197,8 @@ const getRecordNew = async (req: Request, res: Response) => {
     const data = await recordService.getRecordNew(+familyId, +recordId, +petId);
     return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
   } catch (error) {
-    console.error(error);
-    const errorMessage = webhook.slackMessage(req.method, req.url, error);
-    webhook.sendWebhook(errorMessage);
+    next(error);
+
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
