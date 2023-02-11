@@ -23,7 +23,7 @@ const slackMessage = (
 ): string => {
   return `[에러] 
   [${method}] ${originalUrl} 
-  ${uid ? `[유저아이디]: ${uid}` : 'req.user 없음'} 
+  [유저 아이디]: ${uid ? `${uid}` : '없음'} 
   ${error.message}`;
 };
 
