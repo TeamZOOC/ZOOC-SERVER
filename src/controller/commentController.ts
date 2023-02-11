@@ -49,6 +49,13 @@ const createEmojiComment = async (
 ) => {
   const userId: number = req.body.userId;
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
     const recordId = req.params.recordId;
     const { emoji } = req.body;
 

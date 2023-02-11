@@ -6,12 +6,16 @@ const router: Router = Router();
 //? POST comment/{recordId}
 router.post(
   '/:recordId',
-  [body('content').notEmpty(), param('recordId').notEmpty()],
+  [param('recordId').notEmpty(), body('content').notEmpty()],
   commentController.createComment
 );
 
 //? POST comment/emoji/{recordId}
-router.post('/emoji/:recordId', commentController.createEmojiComment);
+router.post(
+  '/emoji/:recordId',
+  [param('recordId').notEmpty(), body('emoji').notEmpty()],
+  commentController.createEmojiComment
+);
 
 //? DELETE comment/{commentId}
 router.delete('/:commentId', commentController.deleteComment);
