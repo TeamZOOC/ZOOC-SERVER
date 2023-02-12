@@ -133,11 +133,12 @@ const getFamilyCode = async (
 const enrollUserToFamily = async (req: Request, res: Response) => {
   const { userId, code } = req.body;
 
-  // code가 없을 떼
-  if (!code)
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
     return res
       .status(sc.BAD_REQUEST)
       .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
 
   try {
     const data = await familyService.enrollUserToFamily(userId, code);
