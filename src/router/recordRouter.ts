@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { param } from 'express-validator';
 import { recordController } from '../controller';
 import { auth, upload } from '../middleware';
 
@@ -11,7 +12,11 @@ router.get('/mission/:familyId', recordController.getMission);
 router.get('/pet/:familyId', recordController.getAllPet);
 
 //? DELETE record/{recordId}
-router.delete('/:recordId', recordController.deleteRecord);
+router.delete(
+  '/:recordId',
+  [param('recordId').notEmpty().isNumeric()],
+  recordController.deleteRecord
+);
 
 //? POST record/{familyId}?missionId=
 router.post(
