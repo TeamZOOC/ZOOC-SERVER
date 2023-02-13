@@ -27,7 +27,7 @@ router.get('/code/:familyId', familyController.getFamilyCode);
 router.post(
   '/pets/:familyId',
   upload.array('files'),
-  [body('petNames').notEmpty(), body('isPetPhotos').notEmpty()],
+  [body('petNames').notEmpty(), body('isPetPhotos').notEmpty().isArray()],
   auth,
   familyController.createPets
 );
