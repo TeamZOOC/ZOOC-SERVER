@@ -139,15 +139,20 @@ const createPet = async (
 const createPets = async (
   names: string[],
   photos: string[],
+  isPetPhotosBoolean: boolean[],
   familyId: number
 ): Promise<PetDto[]> => {
   const petList: PetDto[] = [];
 
+  let j = 0;
   for (let i = 0; i < names.length; i++) {
+    // 사진이 있으면
+    const photoUrl = isPetPhotosBoolean[i] ? photos[j++] : null;
+
     const data: PetDto = await prisma.pet.create({
       data: {
         name: names[i],
-        photo: photos[i],
+        photo: photoUrl,
         family: {
           connect: {
             id: familyId,

@@ -52,11 +52,19 @@ const createPets = async (req: Request, res: Response, next: NextFunction) => {
       })
     );
 
-    const { petNames } = req.body;
+    const { petNames, isPetPhotos } = req.body;
+
+    const isPetPhotosBoolean: boolean[] = await Promise.all(
+      isPetPhotos.map((isPetPhoto: string) => {
+        if (isPetPhoto === 'true') return true;
+        else return false;
+      })
+    );
 
     const data: PetDto[] = await familyService.createPets(
       petNames,
       locations,
+      isPetPhotosBoolean,
       +familyId
     );
 
