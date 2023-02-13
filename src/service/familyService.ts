@@ -243,7 +243,7 @@ const createFamily = async (
     },
   });
 
-  createPets(petNames, petPhotos, family.id, isPetPhotosBoolean);
+  createPets(petNames, petPhotos, isPetPhotosBoolean, family.id);
 };
 
 const familyService = {
