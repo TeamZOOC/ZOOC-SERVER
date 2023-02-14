@@ -139,15 +139,21 @@ const createPet = async (
 const createPets = async (
   names: string[],
   photos: string[],
+  isPetPhotosBoolean: boolean[],
   familyId: number
 ): Promise<PetDto[]> => {
   const petList: PetDto[] = [];
 
+  let j = 0;
   for (let i = 0; i < names.length; i++) {
+    // 사진이 있으면 url 저장 & index++
+    // 사진 없으면 null 저장
+    const photoUrl = isPetPhotosBoolean[i] ? photos[j++] : null;
+
     const data: PetDto = await prisma.pet.create({
       data: {
         name: names[i],
-        photo: photos[i],
+        photo: photoUrl,
         family: {
           connect: {
             id: familyId,
@@ -215,7 +221,8 @@ const enrollUserToFamily = async (userId: number, code: string) => {
 const createFamily = async (
   userId: number,
   petPhotos: string[],
-  petNames: string[]
+  petNames: string[],
+  isPetPhotosBoolean: boolean[]
 ): Promise<void> => {
   if (petPhotos.length !== petNames.length)
     throw new Error('Forget pet photos');
@@ -236,7 +243,7 @@ const createFamily = async (
     },
   });
 
-  createPets(petNames, petPhotos, family.id);
+  createPets(petNames, petPhotos, isPetPhotosBoolean, family.id);
 };
 
 const familyService = {

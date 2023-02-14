@@ -52,11 +52,19 @@ const createPets = async (req: Request, res: Response, next: NextFunction) => {
       })
     );
 
-    const { petNames } = req.body;
+    const { petNames, isPetPhotos } = req.body;
+
+    const isPetPhotosBoolean: boolean[] = await Promise.all(
+      isPetPhotos.map((isPetPhoto: string) => {
+        if (isPetPhoto === 'true') return true;
+        else return false;
+      })
+    );
 
     const data: PetDto[] = await familyService.createPets(
       petNames,
       locations,
+      isPetPhotosBoolean,
       +familyId
     );
 
@@ -195,9 +203,21 @@ const createFamily = async (
       })
     );
 
-    const { petNames } = req.body;
+    const { petNames, isPetPhotos } = req.body;
 
-    await familyService.createFamily(userId, locations, petNames);
+    const isPetPhotosBoolean: boolean[] = await Promise.all(
+      isPetPhotos.map((isPetPhoto: string) => {
+        if (isPetPhoto === 'true') return true;
+        else return false;
+      })
+    );
+
+    await familyService.createFamily(
+      userId,
+      locations,
+      petNames,
+      isPetPhotosBoolean
+    );
 
     return res.status(sc.OK).send(success(sc.OK, rm.CREATE_FAMILY_SUCCESS));
   } catch (error) {
