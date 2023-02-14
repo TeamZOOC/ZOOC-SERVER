@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { validationResult } from 'express-validator';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 import { CommentDto } from '../interface/comment/CommentDto';
@@ -11,7 +12,15 @@ const createComment = async (
   next: NextFunction
 ) => {
   const userId: number = req.body.userId;
+
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
     const recordId = req.params.recordId;
     const { content } = req.body;
 
@@ -41,6 +50,13 @@ const createEmojiComment = async (
 ) => {
   const userId: number = req.body.userId;
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
     const recordId = req.params.recordId;
     const { emoji } = req.body;
 
@@ -64,6 +80,13 @@ const createEmojiComment = async (
 
 //? 댓글 삭제하기
 const deleteComment = async (req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res
+      .status(sc.BAD_REQUEST)
+      .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+  }
+
   const { commentId } = req.params;
 
   await commentService.deleteComment(+commentId);
