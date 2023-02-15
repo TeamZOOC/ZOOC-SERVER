@@ -13,7 +13,7 @@ router.post(
 //? POST comment/emoji/{recordId}
 router.post(
   '/emoji/:recordId',
-  [param('recordId').isNumeric(), body('emoji').trim().notEmpty()],
+  [param('recordId').isNumeric(), body('emoji').notEmpty().isNumeric()],
   commentController.createEmojiComment
 );
 
