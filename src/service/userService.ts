@@ -6,11 +6,11 @@ import { PrismaClient } from '@prisma/client';
 import jwtHandler from '../modules/jwtHandler';
 const prisma = new PrismaClient();
 
-const signUp = async (kakaoId: string) => {
+const signUp = async (socialId: string, provider: string) => {
   const user = await prisma.user.create({
     data: {
-      social_id: kakaoId,
-      provider: 'kakao',
+      social_id: socialId,
+      provider: provider,
       photo: null,
       nick_name: '',
       fcm_token: '',
@@ -54,7 +54,7 @@ const signInKakao = async (kakaoToken: string | undefined) => {
 
   //유저 없으면 회원가입
   if (!user) {
-    const jwtToken = await signUp(kakaoId);
+    const jwtToken = await signUp(kakaoId, 'kakao');
     return jwtToken;
   }
   //유저 있으면 jwt 토큰 생성
@@ -132,13 +132,14 @@ const verifyIdentityToken = async (
   const userSocialId = userInfo.sub;
 
   //존재하는 유저인지 검색
-  // const data = prisma.user.findUnique({
-  //   where: {
-  //     social_id: userSocialId,
-  //   },
-  // });
-  //존재하지 않는 유저면 회원가입
+  const data = prisma.user.findUnique({
+    where: {
+      social_id: userSocialId,
+    },
+  });
 
+  //존재하지 않는 유저면 회원가입
+  if (!data) signUp(userSocialId, 'apple');
   //존재하는 유저면??
 
   //성공하면?
