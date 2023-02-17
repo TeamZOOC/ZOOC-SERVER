@@ -1,11 +1,16 @@
 import { Router } from 'express';
+import { body } from 'express-validator';
 import userController from '../controller/userController';
 import { auth } from '../middleware';
 import upload from '../middleware/upload';
 const router: Router = Router();
 
 router.post('/kakao/signin', userController.signInKakao);
-router.post('/apple/signin', userController.signInApple);
+router.post(
+  '/apple/signin',
+  [body('identityTokenString').notEmpty()],
+  userController.signInApple
+);
 
 router.patch(
   '/profile',

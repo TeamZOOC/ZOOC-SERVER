@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { validationResult } from 'express-validator';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 import userService from '../service/userService';
@@ -17,6 +18,13 @@ const signInKakao = async (req: Request, res: Response) => {
 
 const signInApple = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
     const { identityTokenString } = req.body;
     const jwtToken = await userService.verifyIdentityToken(identityTokenString);
 
