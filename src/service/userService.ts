@@ -1,5 +1,7 @@
 import { UserDto } from './../interface/user/UserDto';
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
+import { createPublicKey } from 'crypto';
 import { PrismaClient } from '@prisma/client';
 import jwtHandler from '../modules/jwtHandler';
 const prisma = new PrismaClient();
@@ -74,6 +76,76 @@ const signInKakao = async (kakaoToken: string | undefined) => {
   return jwtToken;
 };
 
+const getApplePublicKey = async () => {
+  const result = await axios.get('https://appleid.apple.com/auth/keys');
+  const { data } = result;
+
+  return data.keys;
+};
+
+const verifyIdentityToken = async (
+  identityTokenString: string,
+  authorizationCodeString: string
+) => {
+  const JWTSet = await getApplePublicKey();
+  const identityTokenHeader: string = identityTokenString?.split('.')[0];
+  const { kid } = JSON.parse(atob(identityTokenHeader));
+
+  let rightKeyN;
+  let rightKeyE;
+  let rightKeyKty;
+  JWTSet.map((key: any) => {
+    if (kid === key.kid) {
+      rightKeyN = key.n;
+      rightKeyE = key.e;
+      rightKeyKty = key.kty;
+    }
+  });
+
+  //맞는 공개키 재료 없을 때
+  if (!rightKeyN || !rightKeyE) return null;
+
+  const key = {
+    n: rightKeyN,
+    e: rightKeyE,
+    kty: rightKeyKty,
+  };
+
+  const nBuffer = Buffer.from(key.n, 'base64');
+  const eBuffer = Buffer.from(key.e, 'base64');
+
+  const publicKey = createPublicKey({
+    key: {
+      kty: key.kty,
+      n: nBuffer.toString('base64'),
+      e: eBuffer.toString('base64'),
+    },
+    format: 'jwk',
+  });
+
+  const jwtToken = identityTokenString;
+
+  //verify 실패하면 안됨
+  const userInfo = jwt.verify(jwtToken, publicKey) as jwt.JwtPayload;
+  if (!userInfo) return;
+
+  const userSocialId = userInfo.sub;
+
+  //존재하는 유저인지 검색
+  // const data = prisma.user.findUnique({
+  //   where: {
+  //     social_id: userSocialId,
+  //   },
+  // });
+  //존재하지 않는 유저면 회원가입
+
+  //존재하는 유저면??
+
+  //성공하면?
+
+  return userInfo;
+};
+
 //~ 유저 정보 불러오기
 const getUser = async (userId: number): Promise<UserDto> => {
   const data = await prisma.user.findUnique({
@@ -146,6 +218,8 @@ const deleteUser = async (userId: number) => {
 
 const userService = {
   signInKakao,
+  verifyIdentityToken,
+  getApplePublicKey,
   getUser,
   patchUserPhotoAndNickName,
   patchUserNickName,
