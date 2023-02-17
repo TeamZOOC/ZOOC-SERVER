@@ -124,7 +124,7 @@ const verifyIdentityToken = async (identityTokenString: string) => {
 
   //verify 실패하면 안됨
   const userInfo = jwt.verify(identityToken, publicKey) as jwt.JwtPayload;
-  if (!userInfo) return;
+  if (!userInfo) throw new Error('unauthorized apple token');
 
   const userSocialId = userInfo.sub as string;
 

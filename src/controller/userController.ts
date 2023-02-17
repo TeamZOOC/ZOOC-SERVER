@@ -37,7 +37,12 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     await userService.deleteUser(userId);
     return res.status(sc.OK).send(success(sc.OK, rm.DELETE_USER_SUCCESS));
-  } catch (error) {
+  } catch (error: any) {
+    if (error === 'unauthorized apple token')
+      return res
+        .status(sc.UNAUTHORIZED)
+        .send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_APPLE_TOKEN));
+
     next(error);
 
     return res
