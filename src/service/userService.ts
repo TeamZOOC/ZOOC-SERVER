@@ -83,10 +83,7 @@ const getApplePublicKey = async () => {
   return data.keys;
 };
 
-const verifyIdentityToken = async (
-  identityTokenString: string,
-  authorizationCodeString: string
-) => {
+const verifyIdentityToken = async (identityTokenString: string) => {
   const JWTSet = await getApplePublicKey();
   const identityTokenHeader: string = identityTokenString?.split('.')[0];
   const { kid } = JSON.parse(atob(identityTokenHeader));
@@ -123,28 +120,37 @@ const verifyIdentityToken = async (
     format: 'jwk',
   });
 
-  const jwtToken = identityTokenString;
+  const identityToken = identityTokenString;
 
   //verify 실패하면 안됨
-  const userInfo = jwt.verify(jwtToken, publicKey) as jwt.JwtPayload;
+  const userInfo = jwt.verify(identityToken, publicKey) as jwt.JwtPayload;
   if (!userInfo) return;
 
-  const userSocialId = userInfo.sub;
+  const userSocialId = userInfo.sub as string;
 
   //존재하는 유저인지 검색
-  const data = prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       social_id: userSocialId,
     },
   });
 
   //존재하지 않는 유저면 회원가입
-  if (!data) signUp(userSocialId, 'apple');
+  //유저 없으면 회원가입
+  if (!user) {
+    const jwtToken = await signUp(userSocialId, 'apple');
+    return jwtToken;
+  }
+
   //존재하는 유저면??
+  //유저 있으면 jwt 토큰 생성
+  const userId = user.id;
+  const payload = {
+    userId,
+  };
 
-  //성공하면?
-
-  return userInfo;
+  const jwtToken = jwtHandler.sign(payload);
+  return jwtToken;
 };
 
 //~ 유저 정보 불러오기
