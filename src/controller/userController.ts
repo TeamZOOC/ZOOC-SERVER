@@ -16,12 +16,19 @@ const signInKakao = async (req: Request, res: Response) => {
 };
 
 const signInApple = async (req: Request, res: Response, next: NextFunction) => {
-  const { identityTokenString } = req.body;
-  const userInfo = await userService.verifyIdentityToken(identityTokenString);
+  try {
+    const { identityTokenString } = req.body;
+    const jwtToken = await userService.verifyIdentityToken(identityTokenString);
 
-  return res
-    .status(200)
-    .send(success(sc.OK, rm.SIGNIN_SUCCESS, { jwtToken: userInfo }));
+    return res
+      .status(200)
+      .send(success(sc.OK, rm.SIGNIN_SUCCESS, { jwtToken: jwtToken }));
+  } catch (error) {
+    next(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
 };
 
 //~ 회원 탈퇴
