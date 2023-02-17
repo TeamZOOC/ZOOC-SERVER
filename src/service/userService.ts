@@ -6,7 +6,7 @@ import { PrismaClient } from '@prisma/client';
 import jwtHandler from '../modules/jwtHandler';
 const prisma = new PrismaClient();
 
-const signUp = async (kakaoId: bigint) => {
+const signUp = async (kakaoId: string) => {
   const user = await prisma.user.create({
     data: {
       social_id: kakaoId,
@@ -42,7 +42,7 @@ const signInKakao = async (kakaoToken: string | undefined) => {
     },
   });
   const { data } = result;
-  const kakaoId: bigint = data.id;
+  const kakaoId: string = data.id.toString();
 
   if (!kakaoId) throw new Error('KEY_ERROR');
 

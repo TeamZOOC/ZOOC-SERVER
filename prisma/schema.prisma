@@ -83,7 +83,7 @@ model user {
   fcm_token                   String        @db.VarChar(200)
   created_at                  DateTime      @default(now()) @db.Timestamp(6)
   updated_at                  DateTime      @default(now()) @db.Timestamp(6)
-  social_id                   BigInt        @unique
+  social_id                   String        @unique @db.VarChar(20)
   provider                    String        @default("kakao") @db.VarChar(100)
   alarm_alarm_writer_idTouser alarm[]       @relation("alarm_writer_idTouser")
   alarm_alarm_user_idTouser   alarm[]       @relation("alarm_user_idTouser")
