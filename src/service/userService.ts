@@ -223,6 +223,18 @@ const deleteUser = async (userId: number) => {
   });
 };
 
+//~ fcm token 저장
+const updateFcmToken = async (userId: number, fcmToken: string) => {
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      fcm_token: fcmToken,
+    },
+  });
+};
+
 const userService = {
   signInKakao,
   verifyIdentityToken,
@@ -231,6 +243,7 @@ const userService = {
   patchUserPhotoAndNickName,
   patchUserNickName,
   deleteUser,
+  updateFcmToken,
 };
 
 export default userService;
