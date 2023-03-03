@@ -1,14 +1,16 @@
 import { UserDto } from './../interface/user/UserDto';
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
+import { createPublicKey } from 'crypto';
 import { PrismaClient } from '@prisma/client';
 import jwtHandler from '../modules/jwtHandler';
 const prisma = new PrismaClient();
 
-const signUp = async (kakaoId: bigint) => {
+const signUp = async (socialId: string, provider: string) => {
   const user = await prisma.user.create({
     data: {
-      social_id: kakaoId,
-      provider: 'kakao',
+      social_id: socialId,
+      provider: provider,
       photo: null,
       nick_name: '',
       fcm_token: '',
@@ -40,7 +42,7 @@ const signInKakao = async (kakaoToken: string | undefined) => {
     },
   });
   const { data } = result;
-  const kakaoId: bigint = data.id;
+  const kakaoId: string = data.id.toString();
 
   if (!kakaoId) throw new Error('KEY_ERROR');
 
@@ -52,7 +54,7 @@ const signInKakao = async (kakaoToken: string | undefined) => {
 
   //유저 없으면 회원가입
   if (!user) {
-    const jwtToken = await signUp(kakaoId);
+    const jwtToken = await signUp(kakaoId, 'kakao');
     return jwtToken;
   }
   //유저 있으면 jwt 토큰 생성
@@ -71,6 +73,83 @@ const signInKakao = async (kakaoToken: string | undefined) => {
     },
   });
 
+  return jwtToken;
+};
+
+const getApplePublicKey = async () => {
+  const result = await axios.get('https://appleid.apple.com/auth/keys');
+  const { data } = result;
+
+  return data.keys;
+};
+
+const verifyIdentityToken = async (identityTokenString: string) => {
+  const JWTSet = await getApplePublicKey();
+  const identityTokenHeader: string = identityTokenString?.split('.')[0];
+  const { kid } = JSON.parse(atob(identityTokenHeader));
+
+  let rightKeyN;
+  let rightKeyE;
+  let rightKeyKty;
+  JWTSet.map((key: any) => {
+    if (kid === key.kid) {
+      rightKeyN = key.n;
+      rightKeyE = key.e;
+      rightKeyKty = key.kty;
+    }
+  });
+
+  //맞는 공개키 재료 없을 때
+  if (!rightKeyN || !rightKeyE) return null;
+
+  const key = {
+    n: rightKeyN,
+    e: rightKeyE,
+    kty: rightKeyKty,
+  };
+
+  const nBuffer = Buffer.from(key.n, 'base64');
+  const eBuffer = Buffer.from(key.e, 'base64');
+
+  const publicKey = createPublicKey({
+    key: {
+      kty: key.kty,
+      n: nBuffer.toString('base64'),
+      e: eBuffer.toString('base64'),
+    },
+    format: 'jwk',
+  });
+
+  const identityToken = identityTokenString;
+
+  //verify 실패하면 안됨
+  const userInfo = jwt.verify(identityToken, publicKey) as jwt.JwtPayload;
+  if (!userInfo) throw new Error('unauthorized apple token');
+
+  const userSocialId = userInfo.sub as string;
+
+  //존재하는 유저인지 검색
+  const user = await prisma.user.findUnique({
+    where: {
+      social_id: userSocialId,
+    },
+  });
+
+  //존재하지 않는 유저면 회원가입
+  //유저 없으면 회원가입
+  if (!user) {
+    const jwtToken = await signUp(userSocialId, 'apple');
+    return jwtToken;
+  }
+
+  //존재하는 유저면??
+  //유저 있으면 jwt 토큰 생성
+  const userId = user.id;
+  const payload = {
+    userId,
+  };
+
+  const jwtToken = jwtHandler.sign(payload);
   return jwtToken;
 };
 
@@ -146,6 +225,8 @@ const deleteUser = async (userId: number) => {
 
 const userService = {
   signInKakao,
+  verifyIdentityToken,
+  getApplePublicKey,
   getUser,
   patchUserPhotoAndNickName,
   patchUserNickName,
