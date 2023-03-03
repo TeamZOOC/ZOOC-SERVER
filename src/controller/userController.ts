@@ -137,12 +137,28 @@ const updateFcmToken = async (
   }
 };
 
+//* 로그아웃
+const signOut = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req.body;
+    await userService.signOut(userId);
+
+    return res.status(sc.OK).send(success(sc.OK, rm.SIGNOUT_SUCCESS));
+  } catch (error) {
+    next(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const userController = {
   signInKakao,
   signInApple,
   patchUserProfile,
   deleteUser,
   updateFcmToken,
+  signOut,
 };
 
 export default userController;
