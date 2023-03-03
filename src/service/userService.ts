@@ -1,3 +1,4 @@
+import { UserLoginResponseDto } from './../interface/user/UserLoginResponseDto';
 import { UserDto } from './../interface/user/UserDto';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
@@ -35,7 +36,9 @@ const signUp = async (socialId: string, provider: string) => {
   return jwtToken;
 };
 
-const signInKakao = async (kakaoToken: string | undefined) => {
+const signInKakao = async (
+  kakaoToken: string | undefined
+): Promise<UserLoginResponseDto> => {
   const result = await axios.get('https://kapi.kakao.com/v2/user/me', {
     headers: {
       Authorization: `Bearer ${kakaoToken}`,
@@ -83,7 +86,9 @@ const getApplePublicKey = async () => {
   return data.keys;
 };
 
-const verifyIdentityToken = async (identityTokenString: string) => {
+const verifyIdentityToken = async (
+  identityTokenString: string
+): Promise<UserLoginResponseDto> => {
   const JWTSet = await getApplePublicKey();
   const identityTokenHeader: string = identityTokenString?.split('.')[0];
   const { kid } = JSON.parse(atob(identityTokenHeader));
@@ -100,7 +105,7 @@ const verifyIdentityToken = async (identityTokenString: string) => {
   });
 
   //맞는 공개키 재료 없을 때
-  if (!rightKeyN || !rightKeyE) return null;
+  if (!rightKeyN || !rightKeyE) throw new Error('no right public key');
 
   const key = {
     n: rightKeyN,
@@ -139,7 +144,7 @@ const verifyIdentityToken = async (identityTokenString: string) => {
   //유저 없으면 회원가입
   if (!user) {
     const jwtToken = await signUp(userSocialId, 'apple');
-    return jwtToken;
+    return { jwtToken: jwtToken, isExistedUser: false };
   }
 
   //존재하는 유저면??
@@ -150,7 +155,7 @@ const verifyIdentityToken = async (identityTokenString: string) => {
   };
 
   const jwtToken = jwtHandler.sign(payload);
-  return jwtToken;
+  return { jwtToken: jwtToken, isExistedUser: true };
 };
 
 //~ 유저 정보 불러오기

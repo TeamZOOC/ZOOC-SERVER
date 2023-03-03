@@ -29,11 +29,17 @@ const signInApple = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const { identityTokenString } = req.body;
-    const jwtToken = await userService.verifyIdentityToken(identityTokenString);
 
-    return res
-      .status(200)
-      .send(success(sc.OK, rm.SIGNIN_SUCCESS, { jwtToken: jwtToken }));
+    const { jwtToken, isExistedUser } = await userService.verifyIdentityToken(
+      identityTokenString
+    );
+
+    return res.status(200).send(
+      success(sc.OK, rm.SIGNIN_SUCCESS, {
+        jwtToken: jwtToken,
+        isExistedUser: isExistedUser,
+      })
+    );
   } catch (error) {
     next(error);
     return res
