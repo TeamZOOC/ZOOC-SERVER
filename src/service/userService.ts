@@ -58,7 +58,7 @@ const signInKakao = async (
   //유저 없으면 회원가입
   if (!user) {
     const jwtToken = await signUp(kakaoId, 'kakao');
-    return { jwtToken: jwtToken, isExistedUser: true };
+    return { jwtToken: jwtToken, isExistedUser: false };
   }
   //유저 있으면 jwt 토큰 생성
   const userId = user.id;
@@ -76,7 +76,7 @@ const signInKakao = async (
     },
   });
 
-  return { jwtToken: jwtToken, isExistedUser: false };
+  return { jwtToken: jwtToken, isExistedUser: true };
 };
 
 const getApplePublicKey = async () => {
