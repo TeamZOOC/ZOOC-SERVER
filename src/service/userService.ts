@@ -13,7 +13,7 @@ const signUp = async (socialId: string, provider: string) => {
       provider: provider,
       photo: null,
       nick_name: '',
-      fcm_token: '',
+      fcm_token: null,
       jwt_token: '',
     },
   });
