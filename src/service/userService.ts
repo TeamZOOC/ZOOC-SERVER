@@ -235,6 +235,18 @@ const updateFcmToken = async (userId: number, fcmToken: string) => {
   });
 };
 
+//~ 로그아웃
+const signOut = async (userId: number) => {
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      fcm_token: null,
+    },
+  });
+};
+
 const userService = {
   signInKakao,
   verifyIdentityToken,
@@ -244,6 +256,7 @@ const userService = {
   patchUserNickName,
   deleteUser,
   updateFcmToken,
+  signOut,
 };
 
 export default userService;
