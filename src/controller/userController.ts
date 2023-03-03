@@ -111,11 +111,38 @@ const patchUserProfile = async (
   }
 };
 
+//* fcm token 갱신
+const updateFcmToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
+    const { userId, fcmToken } = req.body;
+    await userService.updateFcmToken(+userId, fcmToken);
+
+    return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_FCM_TOKEN_SUCCESS));
+  } catch (error) {
+    next(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const userController = {
   signInKakao,
   signInApple,
   patchUserProfile,
   deleteUser,
+  updateFcmToken,
 };
 
 export default userController;
