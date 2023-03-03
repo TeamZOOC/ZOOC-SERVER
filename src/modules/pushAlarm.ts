@@ -4,16 +4,16 @@ import config from '../config';
 
 const firebaseKey = {
   type: config.fcmType,
-  projectId: config.fcmProjectId,
-  privateKeyId: config.fcmPrivateKeyId,
-  privateKey: config.fcmPrivateKey,
-  clientEmail: config.fcmClientEmail,
-  clientId: config.fcmClientId,
-  authUri: config.fcmAuthUrl,
-  tokenUri: config.fcmTokenUri,
-  authProviderX509CertUrl: config.fcmAuthProviderX509CertUrl,
-  clientX509CertUrl: config.fcmClientX509CertUrl,
-};
+  project_id: config.fcmProjectId,
+  private_key_id: config.fcmPrivateKeyId,
+  private_key: config.fcmPrivateKey,
+  client_email: config.fcmClientEmail,
+  client_id: config.fcmClientId,
+  auth_uri: config.fcmAuthUrl,
+  token_uri: config.fcmTokenUri,
+  auth_provider_x509_cert_url: config.fcmAuthProviderX509CertUrl,
+  client_x509_cert_url: config.fcmClientX509CertUrl,
+} as admin.ServiceAccount;
 
 const app = admin.initializeApp({
   credential: admin.credential.cert(firebaseKey),
