@@ -27,4 +27,6 @@ router.patch(
   userController.updateFcmToken
 );
 
+router.patch('/signout', auth, userController.signOut);
+
 export default router;
