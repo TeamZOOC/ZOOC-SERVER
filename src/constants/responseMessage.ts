@@ -10,6 +10,7 @@ export default {
   SIGNIN_SUCCESS: '로그인 성공',
   SIGNIN_FAIL: '로그인 실패',
   ALREADY_NICKNAME: '이미 사용중인 닉네임입니다.',
+  UNAUTHORIZED_APPLE_TOKEN: '인가되지 않은 애플 토큰입니다.',
 
   // 유저
   READ_USER_SUCCESS: '유저 조회 성공',

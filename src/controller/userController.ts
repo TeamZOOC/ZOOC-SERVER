@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { validationResult } from 'express-validator';
 import { rm, sc } from '../constants';
 import { fail, success } from '../constants/response';
 import userService from '../service/userService';
@@ -15,13 +16,41 @@ const signInKakao = async (req: Request, res: Response) => {
     .send(success(sc.OK, rm.SIGNIN_SUCCESS, { jwtToken: jwtToken }));
 };
 
+const signInApple = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
+    const { identityTokenString } = req.body;
+    const jwtToken = await userService.verifyIdentityToken(identityTokenString);
+
+    return res
+      .status(200)
+      .send(success(sc.OK, rm.SIGNIN_SUCCESS, { jwtToken: jwtToken }));
+  } catch (error) {
+    next(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 //~ 회원 탈퇴
 const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   const userId: number = req.body.userId;
   try {
     await userService.deleteUser(userId);
     return res.status(sc.OK).send(success(sc.OK, rm.DELETE_USER_SUCCESS));
-  } catch (error) {
+  } catch (error: any) {
+    if (error === 'unauthorized apple token')
+      return res
+        .status(sc.UNAUTHORIZED)
+        .send(fail(sc.UNAUTHORIZED, rm.UNAUTHORIZED_APPLE_TOKEN));
+
     next(error);
 
     return res
@@ -84,6 +113,7 @@ const patchUserProfile = async (
 
 const userController = {
   signInKakao,
+  signInApple,
   patchUserProfile,
   deleteUser,
 };
