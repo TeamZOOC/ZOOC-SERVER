@@ -20,4 +20,11 @@ router.patch(
 );
 router.delete('/', auth, userController.deleteUser);
 
+router.patch(
+  '/fcm_token',
+  [body('fcmToken').notEmpty().isString()],
+  auth,
+  userController.updateFcmToken
+);
+
 export default router;
