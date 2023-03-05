@@ -36,6 +36,16 @@ jobs:
           echo JWT_ALGO=${{ secrets.JWT_ALGO }} >> .env
           echo TEST_TOKEN=${{ secrets.TEST_TOKEN }} >> .env
           echo SLACK_WEBHOOK_URI=${{ secrets.SLACK_WEBHOOK_URI }} >> .env
+          echo TYPE=${{ secrets.TYPE }} >> .env
+          echo PROJECT_ID=${{ secrets.PROJECT_ID }} >> .env
+          echo PRIVATE_KEY_ID=${{ secrets.PRIVATE_KEY_ID }} >> .env
+          echo PRIVATE_KEY=${{ secrets.PRIVATE_KEY }} >> .env
+          echo CLIENT_EMAIL=${{ secrets.CLIENT_EMAIL }} >> .env
+          echo CLIENT_ID=${{ secrets.CLIENT_ID }} >> .env
+          echo AUTH_URL=${{ secrets.AUTH_URL }} >> .env
+          echo TOKEN_URI=${{ secrets.TOKEN_URI }} >> .env
+          echo AUTH_PROVIDER_X509_CERT_URL=${{ secrets.AUTH_PROVIDER_X509_CERT_URL }} >> .env
+          echo CLIENT_X509_CERT_URL=${{ secrets.CLIENT_X509_CERT_URL }} >> .env
           cat .env
 
       - name: build server files
