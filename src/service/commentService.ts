@@ -28,6 +28,7 @@ const getAllComment = async (recordId: number): Promise<CommentDto[]> => {
     const commentDate = dayjs(comment.created_at).format('M월 D일');
 
     const data: CommentDto = {
+      commentId: comment.id,
       isEmoji: isEmoji,
       writerId: writer.id,
       nickName: writer.nick_name,

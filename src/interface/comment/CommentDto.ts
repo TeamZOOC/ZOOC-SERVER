@@ -1,4 +1,5 @@
 export interface CommentDto {
+  commentId: number;
   isEmoji: boolean;
   writerId: number;
   nickName: string;
