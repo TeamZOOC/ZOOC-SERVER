@@ -223,7 +223,7 @@ const createFamily = async (
   petPhotos: string[],
   petNames: string[],
   isPetPhotosBoolean: boolean[]
-): Promise<void> => {
+): Promise<number> => {
   if (petPhotos.length !== petNames.length)
     throw new Error('Forget pet photos');
 
@@ -243,7 +243,9 @@ const createFamily = async (
     },
   });
 
-  createPets(petNames, petPhotos, isPetPhotosBoolean, family.id);
+  await createPets(petNames, petPhotos, isPetPhotosBoolean, family.id);
+
+  return family.id;
 };
 
 const familyService = {
