@@ -409,6 +409,7 @@ const getAllRecordAos = async (
       const commentDate = dayjs(comment.created_at).format('M월 D일');
 
       const commentDto: CommentDto = {
+        commentId: comment.id,
         isEmoji: isEmoji,
         writerId: writer.id,
         nickName: writer.nick_name,
