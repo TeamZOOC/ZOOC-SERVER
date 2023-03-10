@@ -212,14 +212,18 @@ const createFamily = async (
       })
     );
 
-    await familyService.createFamily(
+    const familyId: number = await familyService.createFamily(
       userId,
       locations,
       petNames,
       isPetPhotosBoolean
     );
 
-    return res.status(sc.OK).send(success(sc.OK, rm.CREATE_FAMILY_SUCCESS));
+    return res
+      .status(sc.CREATED)
+      .send(
+        success(sc.CREATED, rm.CREATE_FAMILY_SUCCESS, { familyId: familyId })
+      );
   } catch (error) {
     next(error);
 

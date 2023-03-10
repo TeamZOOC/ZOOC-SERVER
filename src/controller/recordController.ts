@@ -128,7 +128,11 @@ const getRecord = async (req: Request, res: Response, next: NextFunction) => {
     if (!recordId)
       return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
 
-    const data = await recordService.getRecord(+familyId, +recordId);
+    const data = await recordService.getRecord(
+      req.body.userId,
+      +familyId,
+      +recordId
+    );
     return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
   } catch (error) {
     next(error);
@@ -202,7 +206,12 @@ const getRecordNew = async (
     if (!recordId)
       return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
 
-    const data = await recordService.getRecordNew(+familyId, +recordId, +petId);
+    const data = await recordService.getRecordNew(
+      req.body.userId,
+      +familyId,
+      +recordId,
+      +petId
+    );
     return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
   } catch (error) {
     next(error);

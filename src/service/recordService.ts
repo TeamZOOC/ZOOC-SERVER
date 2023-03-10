@@ -180,6 +180,7 @@ const createRecord = async (
 
 //* 기록 상세조회
 const getRecord = async (
+  userId: number,
   familyId: number,
   recordId: number
 ): Promise<RecordResponseDto> => {
@@ -234,6 +235,7 @@ const getRecord = async (
   const recordResponseDto: RecordResponseDto = {
     leftId: leftId,
     rightId: rightId,
+    userId: userId,
     record: recordDto,
     comments: recentComments,
   };
@@ -444,6 +446,7 @@ const getAllRecordAos = async (
 
 //* 기록 상세조회 ( NEW !!!!!)
 const getRecordNew = async (
+  userId: number,
   familyId: number,
   recordId: number,
   petId: number
@@ -532,6 +535,7 @@ const getRecordNew = async (
   const recordResponseDto: RecordResponseDto = {
     leftId: leftId,
     rightId: rightId,
+    userId: userId,
     record: recordDto,
     comments: recentComments,
   };
