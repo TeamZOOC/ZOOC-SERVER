@@ -14,7 +14,7 @@ const signUp = async (socialId: string, provider: string) => {
       provider: provider,
       photo: null,
       nick_name: '',
-      fcm_token: null,
+      // fcm_token: null,
       jwt_token: '',
     },
   });
@@ -230,11 +230,18 @@ const deleteUser = async (userId: number) => {
 
 //~ fcm token 저장
 const updateFcmToken = async (userId: number, fcmToken: string) => {
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
+  //! 기존 usertbl에 token 있을 때 코드
+  // await prisma.user.update({
+  //   where: {
+  //     id: userId,
+  //   },
+  //   data: {
+  //     fcm_token: fcmToken,
+  //   },
+  // });
+  await prisma.fcmtoken.create({
     data: {
+      user_id: userId,
       fcm_token: fcmToken,
     },
   });
@@ -242,14 +249,15 @@ const updateFcmToken = async (userId: number, fcmToken: string) => {
 
 //~ 로그아웃
 const signOut = async (userId: number) => {
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      fcm_token: null,
-    },
-  });
+  // //! 기존 usertbl에 token 있을 때 코드
+  // await prisma.user.update({
+  //   where: {
+  //     id: userId,
+  //   },
+  //   data: {
+  //     fcm_token: null,
+  //   },
+  // });
 };
 
 const userService = {
