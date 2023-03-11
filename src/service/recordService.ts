@@ -235,7 +235,6 @@ const getRecord = async (
   const recordResponseDto: RecordResponseDto = {
     leftId: leftId,
     rightId: rightId,
-    userId: userId,
     record: recordDto,
     comments: recentComments,
   };
@@ -535,7 +534,6 @@ const getRecordNew = async (
   const recordResponseDto: RecordResponseDto = {
     leftId: leftId,
     rightId: rightId,
-    userId: userId,
     record: recordDto,
     comments: recentComments,
   };
