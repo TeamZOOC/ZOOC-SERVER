@@ -24,17 +24,17 @@ export default {
   SLACK_WEBHOOK_URI: process.env.SLACK_WEBHOOK_URI as string,
 
   //? FCM
-  fcmType: process.env.TYPE as string,
-  fcmProjectId: process.env.PROJECT_ID as string,
-  fcmPrivateKeyId: process.env.PRIVATE_KEY_ID as string,
-  fcmPrivateKey: process.env.PRIVATE_KEY
-    ? JSON.parse(process.env.PRIVATE_KEY)
+  fcmPrivateKey: process.env.FCM_PRIVATE_KEY
+    ? JSON.parse(process.env.FCM_PRIVATE_KEY)
     : undefined,
-
-  fcmClientEmail: process.env.CLIENT_EMAIL as string,
-  fcmClientId: process.env.CLIENT_ID as string,
-  fcmAuthUrl: process.env.AUTH_URL as string,
-  fcmTokenUri: process.env.TOKEN_URI as string,
-  fcmAuthProviderX509CertUrl: process.env.AUTH_PROVIDER_X509_CERT_URL as string,
-  fcmClientX509CertUrl: process.env.CLIENT_X509_CERT_URL as string,
+  // fcmType: process.env.TYPE as string,
+  // fcmProjectId: process.env.PROJECT_ID as string,
+  // fcmPrivateKeyId: process.env.PRIVATE_KEY_ID as string,
+  // fcmPrivateKey: process.env.PRIVATE_KEY as string,
+  // fcmClientEmail: process.env.CLIENT_EMAIL as string,
+  // fcmClientId: process.env.CLIENT_ID as string,
+  // fcmAuthUrl: process.env.AUTH_URL as string,
+  // fcmTokenUri: process.env.TOKEN_URI as string,
+  // fcmAuthProviderX509CertUrl: process.env.AUTH_PROVIDER_X509_CERT_URL as string,
+  // fcmClientX509CertUrl: process.env.CLIENT_X509_CERT_URL as string,
 };
