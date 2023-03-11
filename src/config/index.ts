@@ -27,7 +27,9 @@ export default {
   fcmType: process.env.TYPE as string,
   fcmProjectId: process.env.PROJECT_ID as string,
   fcmPrivateKeyId: process.env.PRIVATE_KEY_ID as string,
-  fcmPrivateKey: process.env.PRIVATE_KEY as string,
+  fcmPrivateKey: process.env.PRIVATE_KEY
+    ? process.env.PRIVATE_KEY.replace(/\\n/g, '\n')
+    : undefined,
   fcmClientEmail: process.env.CLIENT_EMAIL as string,
   fcmClientId: process.env.CLIENT_ID as string,
   fcmAuthUrl: process.env.AUTH_URL as string,
