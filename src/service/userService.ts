@@ -175,6 +175,18 @@ const getUser = async (userId: number): Promise<UserDto> => {
   throw new Error('no user');
 };
 
+//~ 유저의 기록 경험 업데이트
+const patchUserEverRecorded = async (userId: number) => {
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      ever_recorded: true,
+    },
+  });
+};
+
 //~ 사용자 프로필 사진 & 닉네임 수정하기
 const patchUserPhotoAndNickName = async (
   userId: number,
@@ -265,6 +277,7 @@ const userService = {
   verifyIdentityToken,
   getApplePublicKey,
   getUser,
+  patchUserEverRecorded,
   patchUserPhotoAndNickName,
   patchUserNickName,
   deleteUser,

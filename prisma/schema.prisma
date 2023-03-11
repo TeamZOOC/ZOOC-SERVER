@@ -84,6 +84,7 @@ model user {
   updated_at                  DateTime      @default(now()) @db.Timestamp(6)
   social_id                   String        @unique @db.VarChar(100)
   provider                    String        @default("kakao") @db.VarChar(100)
+  ever_recorded               Boolean       @default(false)
   alarm_alarm_writer_idTouser alarm[]       @relation("alarm_writer_idTouser")
   alarm_alarm_user_idTouser   alarm[]       @relation("alarm_user_idTouser")
   alarmsetting                alarmsetting?
