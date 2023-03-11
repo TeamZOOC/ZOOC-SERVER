@@ -24,7 +24,16 @@ const sendPushAlarm = async (messages: MulticastMessage) => {
   app
     .messaging()
     .sendMulticast(messages)
-    .then((res) => console.log('success', res));
+    .then((res) => {
+      if (res.failureCount > 0) {
+        console.log('error를 발생시킨 토큰:');
+        res.responses.forEach((resp, index) => {
+          if (!resp.success) {
+            console.log(`${messages.tokens[index]}`);
+          }
+        });
+      }
+    });
   //이 에러 캐치는 호출 쪽에서 하자
   // .catch((err) => console.error('error', err));
 };
