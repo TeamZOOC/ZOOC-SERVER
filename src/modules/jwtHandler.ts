@@ -1,3 +1,4 @@
+import { JwtPayload } from 'jsonwebtoken';
 // src/modules/jwtHandler.ts
 import jwt from 'jsonwebtoken';
 import config from '../config';
@@ -5,13 +6,20 @@ import tokenType from '../constants/tokenType';
 
 //* 받아온 userId, socialId를 담는 jwt token 생성
 const sign = (payload: object) => {
-  const jwtToken = jwt.sign(payload, config.JWT_SECRET, { expiresIn: '7d' });
-  return jwtToken;
+  const accessToken = jwt.sign(payload, config.JWT_SECRET, { expiresIn: '7d' });
+  const refreshToken = jwt.sign(payload, config.JWT_SECRET, {
+    expiresIn: '60d',
+  });
+  const data = {
+    accessToken,
+    refreshToken,
+  };
+  return data;
 };
 
 //* token 검사!
 const verify = (token: string) => {
-  let decoded: string | jwt.JwtPayload;
+  let decoded;
 
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET as string);

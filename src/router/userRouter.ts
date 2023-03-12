@@ -12,6 +12,8 @@ router.post(
   userController.signInApple
 );
 
+router.post('/refresh', userController.refreshToken);
+
 router.patch(
   '/profile',
   upload.single('file'),
