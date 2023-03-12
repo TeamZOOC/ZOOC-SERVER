@@ -156,7 +156,11 @@ const getAllRecord = async (
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
-    const data = await recordService.getAllRecord(11, +familyId, +petId);
+    const data = await recordService.getAllRecord(
+      req.body.userId,
+      +familyId,
+      +petId
+    );
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
@@ -182,7 +186,11 @@ const getAllRecordAos = async (
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
-    const data = await recordService.getAllRecordAos(11, +familyId, +petId);
+    const data = await recordService.getAllRecordAos(
+      req.body.userId,
+      +familyId,
+      +petId
+    );
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
@@ -203,7 +211,7 @@ const getRecord = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
 
     const data = await recordService.getRecord(
-      11,
+      req.body.userId,
       +familyId,
       +recordId,
       +petId

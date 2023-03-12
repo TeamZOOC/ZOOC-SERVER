@@ -78,7 +78,7 @@ const createComment = async (
       },
     },
   });
-  return getAllComment(recordId);
+  return getAllComment(userId, recordId);
 };
 
 //? 이모지 댓글 작성
@@ -110,7 +110,7 @@ const createEmojiComment = async (
       },
     },
   });
-  return getAllComment(recordId);
+  return getAllComment(userId, recordId);
 };
 
 const deleteComment = async (commentId: number): Promise<void> => {

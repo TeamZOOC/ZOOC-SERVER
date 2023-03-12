@@ -394,7 +394,6 @@ const getAllRecordAos = async (
       writerName: writer.nick_name,
       isMyRecord: writer.id === userId,
     };
-    console.log(writer.id, '===', userId);
 
     const commentsResponse: CommentDto[] = [];
 
