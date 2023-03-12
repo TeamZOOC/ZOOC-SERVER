@@ -121,27 +121,27 @@ const createRecord = async (
   }
 };
 
-//? 기록 상세 조회
-const getRecord = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { familyId, recordId } = req.params;
-    if (!recordId)
-      return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
+// //? 기록 상세 조회
+// const getRecord = async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     const { familyId, recordId } = req.params;
+//     if (!recordId)
+//       return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
 
-    const data = await recordService.getRecord(
-      req.body.userId,
-      +familyId,
-      +recordId
-    );
-    return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
-  } catch (error) {
-    next(error);
+//     const data = await recordService.getRecord(
+//       req.body.userId,
+//       +familyId,
+//       +recordId
+//     );
+//     return res.status(sc.OK).send(success(sc.OK, rm.GET_RECORD_SUCCESS, data));
+//   } catch (error) {
+//     next(error);
 
-    return res
-      .status(sc.INTERNAL_SERVER_ERROR)
-      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
-  }
-};
+//     return res
+//       .status(sc.INTERNAL_SERVER_ERROR)
+//       .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+//   }
+// };
 
 //? 기록 전체 조회 (아요)
 const getAllRecord = async (
@@ -156,7 +156,7 @@ const getAllRecord = async (
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
-    const data = await recordService.getAllRecord(+familyId, +petId);
+    const data = await recordService.getAllRecord(11, +familyId, +petId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
@@ -182,7 +182,7 @@ const getAllRecordAos = async (
         .status(sc.BAD_REQUEST)
         .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
 
-    const data = await recordService.getAllRecordAos(+familyId, +petId);
+    const data = await recordService.getAllRecordAos(11, +familyId, +petId);
     return res
       .status(sc.OK)
       .send(success(sc.OK, rm.GET_ALL_RECORD_SUCCESS, data));
@@ -196,18 +196,14 @@ const getAllRecordAos = async (
 };
 
 //? 기록 상세 조회 ( NEW !!!!)
-const getRecordNew = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getRecord = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { familyId, petId, recordId } = req.params;
     if (!recordId)
       return res.status(sc.NOT_FOUND).send(fail(sc.NOT_FOUND, rm.NOT_FOUND));
 
-    const data = await recordService.getRecordNew(
-      req.body.userId,
+    const data = await recordService.getRecord(
+      11,
       +familyId,
       +recordId,
       +petId
@@ -230,6 +226,6 @@ const recordController = {
   getRecord,
   getAllRecord,
   getAllRecordAos,
-  getRecordNew,
+  //getRecordNew,
 };
 export default recordController;
