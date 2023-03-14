@@ -4,7 +4,10 @@ import { CommentDto } from '../interface/comment/CommentDto';
 
 const prisma = new PrismaClient();
 
-const getAllComment = async (recordId: number): Promise<CommentDto[]> => {
+const getAllComment = async (
+  userId: number,
+  recordId: number
+): Promise<CommentDto[]> => {
   const comments = await prisma.comment.findMany({
     where: {
       record_id: recordId,
@@ -36,6 +39,7 @@ const getAllComment = async (recordId: number): Promise<CommentDto[]> => {
       content: comment.content,
       emoji: comment.emoji,
       date: commentDate,
+      isMyComment: writer.id === userId,
     };
 
     recentComments.push(data);
@@ -74,7 +78,7 @@ const createComment = async (
       },
     },
   });
-  return getAllComment(recordId);
+  return getAllComment(userId, recordId);
 };
 
 //? 이모지 댓글 작성
@@ -106,7 +110,7 @@ const createEmojiComment = async (
       },
     },
   });
-  return getAllComment(recordId);
+  return getAllComment(userId, recordId);
 };
 
 const deleteComment = async (commentId: number): Promise<void> => {

@@ -26,10 +26,10 @@ router.post(
   recordController.createRecord
 );
 
-//? GET record/detail/{familyId}/{recordId}
-router.get('/detail/:familyId/:recordId', recordController.getRecord);
+//router.get('/detail/:familyId/:recordId', recordController.getRecord);
 
-router.get('/detail/:familyId/:petId/:recordId', recordController.getRecordNew);
+//? GET record/detail/{familyId}/{petId}/{recordId}
+router.get('/detail/:familyId/:petId/:recordId', recordController.getRecord);
 
 //? GET record/{familyId}/{petId}
 router.get('/:familyId/:petId', recordController.getAllRecord);

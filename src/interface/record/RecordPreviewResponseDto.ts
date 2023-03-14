@@ -8,4 +8,5 @@ export interface RecordPreviewResponseDto {
 export interface CommentWriterDto {
   writerId: number;
   writerPhoto: string | null;
+  isMyComment: boolean;
 }

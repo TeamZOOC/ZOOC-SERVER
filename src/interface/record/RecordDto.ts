@@ -5,4 +5,5 @@ export interface RecordDto {
   date: string;
   writerPhoto: string | null;
   writerName: string;
+  isMyRecord: boolean;
 }

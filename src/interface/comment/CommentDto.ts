@@ -7,4 +7,5 @@ export interface CommentDto {
   content: string | null;
   emoji: number | null;
   date: string;
+  isMyComment: boolean;
 }
