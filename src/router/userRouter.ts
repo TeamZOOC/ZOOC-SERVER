@@ -20,4 +20,18 @@ router.patch(
 );
 router.delete('/', auth, userController.deleteUser);
 
+router.put(
+  '/fcm_token',
+  [body('fcmToken').notEmpty().isString()],
+  auth,
+  userController.updateFcmToken
+);
+
+router.delete(
+  '/signout',
+  [body('fcmToken').notEmpty().isString()],
+  auth,
+  userController.signOut
+);
+
 export default router;

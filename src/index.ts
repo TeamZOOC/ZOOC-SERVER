@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
+import sendPushAlarm from './modules/pushAlarm';
 import webhook from './modules/test-message';
 import router from './router';
 

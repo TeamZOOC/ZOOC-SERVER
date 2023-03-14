@@ -14,7 +14,7 @@ const signUp = async (socialId: string, provider: string) => {
       provider: provider,
       photo: null,
       nick_name: '',
-      fcm_token: '',
+      // fcm_token: null,
       jwt_token: '',
     },
   });
@@ -175,6 +175,18 @@ const getUser = async (userId: number): Promise<UserDto> => {
   throw new Error('no user');
 };
 
+//~ 유저의 기록 경험 업데이트
+const patchUserEverRecorded = async (userId: number) => {
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      ever_recorded: true,
+    },
+  });
+};
+
 //~ 사용자 프로필 사진 & 닉네임 수정하기
 const patchUserPhotoAndNickName = async (
   userId: number,
@@ -228,14 +240,53 @@ const deleteUser = async (userId: number) => {
   });
 };
 
+//~ fcm token 저장
+const updateFcmToken = async (userId: number, fcmToken: string) => {
+  //! 기존 usertbl에 token 있을 때 코드
+  // await prisma.user.update({
+  //   where: {
+  //     id: userId,
+  //   },
+  //   data: {
+  //     fcm_token: fcmToken,
+  //   },
+  // });
+  await prisma.fcmtoken
+    .create({
+      data: {
+        user_id: userId,
+        fcm_token: fcmToken,
+      },
+    })
+    .catch((error) => {
+      if (error.code === 'P2002') throw new Error('token already saved');
+    });
+};
+
+//~ 로그아웃
+const signOut = async (userId: number, fcmToken: string) => {
+  await prisma.fcmtoken
+    .delete({
+      where: {
+        fcm_token: fcmToken,
+      },
+    })
+    .catch((error) => {
+      if (error.code === 'P2025') throw new Error('token not exist');
+    });
+};
+
 const userService = {
   signInKakao,
   verifyIdentityToken,
   getApplePublicKey,
   getUser,
+  patchUserEverRecorded,
   patchUserPhotoAndNickName,
   patchUserNickName,
   deleteUser,
+  updateFcmToken,
+  signOut,
 };
 
 export default userService;

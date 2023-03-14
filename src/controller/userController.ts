@@ -120,11 +120,71 @@ const patchUserProfile = async (
   }
 };
 
+//* fcm token 갱신
+const updateFcmToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
+    const { userId, fcmToken } = req.body;
+    await userService.updateFcmToken(+userId, fcmToken);
+
+    return res
+      .status(sc.OK)
+      .send(success(sc.CREATED, rm.CREATE_FCM_TOKEN_SUCCESS));
+  } catch (error: any) {
+    if (error.message === 'token already saved') {
+      return res
+        .status(sc.OK)
+        .send(success(sc.OK, rm.CREATE_FCM_TOKEN_SUCCESS));
+    }
+    next(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
+//* 로그아웃
+const signOut = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
+    const { userId, fcmToken } = req.body;
+    await userService.signOut(userId, fcmToken);
+
+    return res.status(sc.OK).send(success(sc.OK, rm.SIGNOUT_SUCCESS));
+  } catch (error: any) {
+    if (error.message === 'token not exist')
+      return res.status(sc.OK).send(success(sc.OK, rm.SIGNOUT_SUCCESS));
+
+    next(error);
+    return res
+      .status(sc.INTERNAL_SERVER_ERROR)
+      .send(fail(sc.INTERNAL_SERVER_ERROR, rm.INTERNAL_SERVER_ERROR));
+  }
+};
+
 const userController = {
   signInKakao,
   signInApple,
   patchUserProfile,
   deleteUser,
+  updateFcmToken,
+  signOut,
 };
 
 export default userController;

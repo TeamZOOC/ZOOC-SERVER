@@ -9,6 +9,7 @@ export default {
   SIGNUP_FAIL: '회원 가입 실패',
   SIGNIN_SUCCESS: '로그인 성공',
   SIGNIN_FAIL: '로그인 실패',
+  SIGNOUT_SUCCESS: '로그아웃 성공',
   ALREADY_NICKNAME: '이미 사용중인 닉네임입니다.',
   UNAUTHORIZED_APPLE_TOKEN: '인가되지 않은 애플 토큰입니다.',
 
@@ -19,6 +20,8 @@ export default {
   DELETE_USER_SUCCESS: '유저 탈퇴 성공',
   DELETE_USER_FAIL: '유저 탈퇴 실패',
   NO_USER: '탈퇴했거나 가입하지 않은 유저입니다.',
+  UPDATE_USER_PROFILE_SUCCESS: '유저 프로필 수정 성공',
+  CREATE_FCM_TOKEN_SUCCESS: 'fcm 토큰 저장 성공',
 
   // 토큰
   CREATE_TOKEN_SUCCESS: '토큰 재발급 성공',
@@ -58,9 +61,6 @@ export default {
   CREATE_COMMENT_SUCCESS: '일반 댓글 생성 성공',
   CREATE_EMOJI_COMMENT_SUCCESS: '이모지 댓글 생성 성공',
   DELETE_COMMENT_SUCCESS: '댓글 삭제 성공',
-
-  // 유저
-  UPDATE_USER_PROFILE_SUCCESS: '유저 프로필 수정 성공',
 
   //알람
   GET_ALARM_LIST_SUCCESS: '알람 리스트 조회 성공',

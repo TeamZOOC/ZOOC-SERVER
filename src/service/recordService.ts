@@ -15,6 +15,8 @@ import dayjs from 'dayjs';
 import { CommentDto } from '../interface/comment/CommentDto';
 import commentService from './commentService';
 import { RecordPreviewResponseAosDto } from '../interface/record/RecordPreviewResponseAosDto';
+import sendPushAlarm from '../modules/pushAlarm';
+import userService from './userService';
 
 //* 완료되지 않은 미션 조회
 const getMission = async (
@@ -102,6 +104,18 @@ const createRecord = async (
 ): Promise<void> => {
   let recordId: number;
 
+  //~ 유저가 기록을 한 적이 있는지 불러오기
+  const userNickNameAndEverRecordedInfo = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      nick_name: true,
+      ever_recorded: true,
+    },
+  });
+
+  if (!userNickNameAndEverRecordedInfo) throw new Error('no User');
+
+  //* 일반 기록
   if (missionId === undefined) {
     const record = await prisma.record.create({
       data: {
@@ -121,6 +135,7 @@ const createRecord = async (
     });
     recordId = record.id;
   } else {
+    //* 미션 기록
     const missionRecord = await prisma.record.findFirst({
       where: {
         mission_id: missionId,
@@ -162,7 +177,8 @@ const createRecord = async (
     });
   });
   await Promise.all(promises);
-  //알람 저장
+
+  //~ 알람 저장
   const familyMembers: UserDto[] =
     await familyService.getFamilyMembersExceptUser(userId, familyId);
 
@@ -176,6 +192,57 @@ const createRecord = async (
       },
     });
   });
+
+  //~ 유저가 처음 기록할 때 푸시알림 전송
+  if (!userNickNameAndEverRecordedInfo.ever_recorded) {
+    // 유저의 기록 경험 업데이트
+    userService.patchUserEverRecorded(userId);
+    //~ 유저를 제외한 가족들의 fcm 토큰 저장하는 배열
+    const tokens: string[] = [];
+    // 본인을 제외한 가족 구성원들을 도는 맵
+    const promise = familyMembers.map(async (familyMember) => {
+      // 가족 구성원 한 명의 유저 정보 & fcm 토큰 정보 배열
+      const userAndFcmInfos = await prisma.user.findMany({
+        where: {
+          id: familyMember.id,
+        },
+        include: {
+          fcmtoken: true,
+        },
+      });
+      // 각 fcm 토큰 배열로 저장
+      userAndFcmInfos.map(async (userAndFcmInfo) => {
+        const usersFcmTokensArray = userAndFcmInfo.fcmtoken;
+        usersFcmTokensArray.map(async (usersFcmToken) => {
+          tokens.push(usersFcmToken.fcm_token);
+        });
+      });
+    });
+    await Promise.all(promise);
+
+    const messages = {
+      android: {
+        data: {
+          title: 'ZOOC',
+          body: `${userNickNameAndEverRecordedInfo.nick_name}가 기록한 반려동물의 첫 순간에 함께해주세요!`,
+        },
+      },
+      apns: {
+        payload: {
+          aps: {
+            contentAvailable: true,
+            alert: {
+              title: 'ZOOC',
+              body: `${userNickNameAndEverRecordedInfo.nick_name}가 기록한 반려동물의 첫 순간에 함께해주세요!`,
+            },
+          },
+        },
+      },
+      tokens: tokens,
+    };
+
+    const result = sendPushAlarm(messages);
+  }
 };
 
 //* 기록 상세조회
