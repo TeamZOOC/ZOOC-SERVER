@@ -137,8 +137,15 @@ const updateFcmToken = async (
     const { userId, fcmToken } = req.body;
     await userService.updateFcmToken(+userId, fcmToken);
 
-    return res.status(sc.OK).send(success(sc.OK, rm.UPDATE_FCM_TOKEN_SUCCESS));
-  } catch (error) {
+    return res
+      .status(sc.OK)
+      .send(success(sc.CREATED, rm.CREATE_FCM_TOKEN_SUCCESS));
+  } catch (error: any) {
+    if (error.message === 'token already saved') {
+      return res
+        .status(sc.OK)
+        .send(success(sc.OK, rm.CREATE_FCM_TOKEN_SUCCESS));
+    }
     next(error);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)

@@ -20,7 +20,7 @@ router.patch(
 );
 router.delete('/', auth, userController.deleteUser);
 
-router.patch(
+router.put(
   '/fcm_token',
   [body('fcmToken').notEmpty().isString()],
   auth,

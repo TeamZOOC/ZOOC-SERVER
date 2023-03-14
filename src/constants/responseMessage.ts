@@ -21,7 +21,7 @@ export default {
   DELETE_USER_FAIL: '유저 탈퇴 실패',
   NO_USER: '탈퇴했거나 가입하지 않은 유저입니다.',
   UPDATE_USER_PROFILE_SUCCESS: '유저 프로필 수정 성공',
-  UPDATE_FCM_TOKEN_SUCCESS: 'fcm 토큰 갱신 성공',
+  CREATE_FCM_TOKEN_SUCCESS: 'fcm 토큰 저장 성공',
 
   // 토큰
   CREATE_TOKEN_SUCCESS: '토큰 재발급 성공',

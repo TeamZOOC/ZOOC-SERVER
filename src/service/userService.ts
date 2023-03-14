@@ -251,12 +251,16 @@ const updateFcmToken = async (userId: number, fcmToken: string) => {
   //     fcm_token: fcmToken,
   //   },
   // });
-  await prisma.fcmtoken.create({
-    data: {
-      user_id: userId,
-      fcm_token: fcmToken,
-    },
-  });
+  await prisma.fcmtoken
+    .create({
+      data: {
+        user_id: userId,
+        fcm_token: fcmToken,
+      },
+    })
+    .catch((error) => {
+      if (error.code === 'P2002') throw new Error('token already saved');
+    });
 };
 
 //~ 로그아웃
