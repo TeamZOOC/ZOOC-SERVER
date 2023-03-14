@@ -264,16 +264,16 @@ const updateFcmToken = async (userId: number, fcmToken: string) => {
 };
 
 //~ 로그아웃
-const signOut = async (userId: number) => {
-  // //! 기존 usertbl에 token 있을 때 코드
-  // await prisma.user.update({
-  //   where: {
-  //     id: userId,
-  //   },
-  //   data: {
-  //     fcm_token: null,
-  //   },
-  // });
+const signOut = async (userId: number, fcmToken: string) => {
+  await prisma.fcmtoken
+    .delete({
+      where: {
+        fcm_token: fcmToken,
+      },
+    })
+    .catch((error) => {
+      if (error.code === 'P2025') throw new Error('token not exist');
+    });
 };
 
 const userService = {

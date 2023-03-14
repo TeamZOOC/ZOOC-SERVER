@@ -27,6 +27,11 @@ router.put(
   userController.updateFcmToken
 );
 
-router.patch('/signout', auth, userController.signOut);
+router.delete(
+  '/signout',
+  [body('fcmToken').notEmpty().isString()],
+  auth,
+  userController.signOut
+);
 
 export default router;

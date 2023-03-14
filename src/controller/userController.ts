@@ -156,11 +156,21 @@ const updateFcmToken = async (
 //* 로그아웃
 const signOut = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userId } = req.body;
-    await userService.signOut(userId);
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res
+        .status(sc.BAD_REQUEST)
+        .send(fail(sc.BAD_REQUEST, rm.BAD_REQUEST));
+    }
+
+    const { userId, fcmToken } = req.body;
+    await userService.signOut(userId, fcmToken);
 
     return res.status(sc.OK).send(success(sc.OK, rm.SIGNOUT_SUCCESS));
-  } catch (error) {
+  } catch (error: any) {
+    if (error.message === 'token not exist')
+      return res.status(sc.OK).send(success(sc.OK, rm.SIGNOUT_SUCCESS));
+
     next(error);
     return res
       .status(sc.INTERNAL_SERVER_ERROR)
