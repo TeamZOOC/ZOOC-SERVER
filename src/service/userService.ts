@@ -7,6 +7,46 @@ import { PrismaClient } from '@prisma/client';
 import jwtHandler from '../modules/jwtHandler';
 const prisma = new PrismaClient();
 
+const refreshToken = async (
+  refreshToken: string
+): Promise<UserLoginResponseDto> => {
+  const decode = jwtHandler.verify(refreshToken);
+  // 디코드해서 userid 불러와야함
+
+  const user = await prisma.user.findFirst({
+    // userID 로 user.jwt_token 찾기
+    where: {
+      jwt_token: refreshToken,
+    },
+  });
+  if (!user) throw new Error('no user using this token');
+
+  // 인자인 refreshToken 과 user.jwt_token 비교 해서 같으면 아래 실행
+
+  const userId = user.id;
+
+  const payload = {
+    userId: userId,
+  };
+  const jwtToken = jwtHandler.sign(payload);
+
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      jwt_token: jwtToken.refreshToken,
+    },
+  });
+
+  const refreshResult: UserLoginResponseDto = {
+    accessToken: jwtToken.accessToken,
+    refreshToken: jwtToken.refreshToken,
+    isExistedUser: true,
+  };
+  return refreshResult;
+};
+
 const signUp = async (socialId: string, provider: string) => {
   const user = await prisma.user.create({
     data: {
@@ -14,8 +54,7 @@ const signUp = async (socialId: string, provider: string) => {
       provider: provider,
       photo: null,
       nick_name: '',
-      fcm_token: '',
-      jwt_token: '',
+      jwt_token: '', // 리프레시 토큰 저장
     },
   });
   const userId = user.id;
@@ -29,11 +68,14 @@ const signUp = async (socialId: string, provider: string) => {
       id: userId,
     },
     data: {
-      jwt_token: jwtToken,
+      jwt_token: jwtToken.refreshToken,
     },
   });
 
-  return jwtToken;
+  return {
+    accessToken: jwtToken.accessToken,
+    refreshToken: jwtToken.refreshToken,
+  };
 };
 
 const signInKakao = async (
@@ -58,12 +100,17 @@ const signInKakao = async (
   //유저 없으면 회원가입
   if (!user) {
     const jwtToken = await signUp(kakaoId, 'kakao');
-    return { jwtToken: jwtToken, isExistedUser: false };
+    const userSignUpResponse: UserLoginResponseDto = {
+      accessToken: jwtToken.accessToken,
+      refreshToken: jwtToken.refreshToken,
+      isExistedUser: false,
+    };
+    return userSignUpResponse;
   }
   //유저 있으면 jwt 토큰 생성
   const userId = user.id;
   const payload = {
-    userId,
+    userId: userId,
   };
   const jwtToken = jwtHandler.sign(payload);
 
@@ -72,11 +119,17 @@ const signInKakao = async (
       id: userId,
     },
     data: {
-      jwt_token: jwtToken,
+      jwt_token: jwtToken.refreshToken,
     },
   });
 
-  return { jwtToken: jwtToken, isExistedUser: true };
+  const userSignInResponse: UserLoginResponseDto = {
+    accessToken: jwtToken.accessToken,
+    refreshToken: jwtToken.refreshToken,
+    isExistedUser: true,
+  };
+
+  return userSignInResponse;
 };
 
 const getApplePublicKey = async () => {
@@ -144,18 +197,29 @@ const verifyIdentityToken = async (
   //유저 없으면 회원가입
   if (!user) {
     const jwtToken = await signUp(userSocialId, 'apple');
-    return { jwtToken: jwtToken, isExistedUser: false };
+    const userSignUpResponse: UserLoginResponseDto = {
+      accessToken: jwtToken.accessToken,
+      refreshToken: jwtToken.refreshToken,
+      isExistedUser: false,
+    };
+    return userSignUpResponse;
   }
 
   //존재하는 유저면??
   //유저 있으면 jwt 토큰 생성
   const userId = user.id;
   const payload = {
-    userId,
+    userId: userId,
   };
 
   const jwtToken = jwtHandler.sign(payload);
-  return { jwtToken: jwtToken, isExistedUser: true };
+
+  const userSignInResponse: UserLoginResponseDto = {
+    accessToken: jwtToken.accessToken,
+    refreshToken: jwtToken.refreshToken,
+    isExistedUser: true,
+  };
+  return userSignInResponse;
 };
 
 //~ 유저 정보 불러오기
@@ -229,6 +293,7 @@ const deleteUser = async (userId: number) => {
 };
 
 const userService = {
+  refreshToken,
   signInKakao,
   verifyIdentityToken,
   getApplePublicKey,

@@ -178,72 +178,74 @@ const createRecord = async (
   });
 };
 
-//* 기록 상세조회
-const getRecord = async (
-  userId: number,
-  familyId: number,
-  recordId: number
-): Promise<RecordResponseDto> => {
-  const orderedRecord = await prisma.record.findMany({
-    where: {
-      family_id: familyId,
-    },
-    orderBy: {
-      created_at: 'desc',
-    },
-  });
+// //* 기록 상세조회
+// const getRecord = async (
+//   userId: number,
+//   familyId: number,
+//   recordId: number
+// ): Promise<RecordResponseDto> => {
+//   const orderedRecord = await prisma.record.findMany({
+//     where: {
+//       family_id: familyId,
+//     },
+//     orderBy: {
+//       created_at: 'desc',
+//     },
+//   });
 
-  const idx = orderedRecord.findIndex((record) => record.id === recordId);
+//   const idx = orderedRecord.findIndex((record) => record.id === recordId);
 
-  let leftId = null;
-  let rightId = null;
+//   let leftId = null;
+//   let rightId = null;
 
-  if (idx > 0) leftId = orderedRecord[idx - 1].id;
-  if (idx < orderedRecord.length - 1) rightId = orderedRecord[idx + 1].id;
+//   if (idx > 0) leftId = orderedRecord[idx - 1].id;
+//   if (idx < orderedRecord.length - 1) rightId = orderedRecord[idx + 1].id;
 
-  const record = await prisma.record.findUnique({
-    where: {
-      id: recordId,
-    },
-  });
+//   const record = await prisma.record.findUnique({
+//     where: {
+//       id: recordId,
+//     },
+//   });
 
-  if (!record) throw new Error('no record!');
+//   if (!record) throw new Error('no record!');
 
-  const writer = await prisma.user.findUnique({
-    where: {
-      id: record.writer,
-    },
-  });
+//   const writer = await prisma.user.findUnique({
+//     where: {
+//       id: record.writer,
+//     },
+//   });
 
-  if (!writer) throw new Error('no record writer!');
+//   if (!writer) throw new Error('no record writer!');
 
-  const recordDate = dayjs(record.created_at).format('M월 D일');
+//   const recordDate = dayjs(record.created_at).format('M월 D일');
 
-  const recordDto: RecordDto = {
-    id: recordId,
-    photo: record.photo,
-    content: record.content,
-    date: recordDate,
-    writerPhoto: writer.photo,
-    writerName: writer.nick_name,
-  };
+//   const recordDto: RecordDto = {
+//     id: recordId,
+//     photo: record.photo,
+//     content: record.content,
+//     date: recordDate,
+//     writerPhoto: writer.photo,
+//     writerName: writer.nick_name,
+//     isMyRecord:
+//   };
 
-  const recentComments: CommentDto[] = await commentService.getAllComment(
-    recordId
-  );
+//   const recentComments: CommentDto[] = await commentService.getAllComment(
+//     recordId
+//   );
 
-  const recordResponseDto: RecordResponseDto = {
-    leftId: leftId,
-    rightId: rightId,
-    record: recordDto,
-    comments: recentComments,
-  };
+//   const recordResponseDto: RecordResponseDto = {
+//     leftId: leftId,
+//     rightId: rightId,
+//     record: recordDto,
+//     comments: recentComments,
+//   };
 
-  return recordResponseDto;
-};
+//   return recordResponseDto;
+// };
 
-//* 기록 전체조회
+//* 기록 전체조회 ( IOS )
 const getAllRecord = async (
+  userId: number,
   familyId: number,
   petId: number
 ): Promise<RecordPreviewResponseDto[]> => {
@@ -288,6 +290,7 @@ const getAllRecord = async (
       date: recordDate,
       writerPhoto: writer.photo,
       writerName: writer.nick_name,
+      isMyRecord: writer.id === userId,
     };
 
     const commentWriters: CommentWriterDto[] = [];
@@ -316,6 +319,7 @@ const getAllRecord = async (
       const commentWriterDto: CommentWriterDto = {
         writerId: writer.id,
         writerPhoto: writer.photo,
+        isMyComment: writer.id === userId,
       };
 
       const existWriter = commentWriters.find(
@@ -341,8 +345,9 @@ const getAllRecord = async (
   return orderedRecordResponse;
 };
 
-//* 기록 전체조회 ( 안드용 )
+//* 기록 전체조회 ( AOS )
 const getAllRecordAos = async (
+  userId: number,
   familyId: number,
   petId: number
 ): Promise<RecordPreviewResponseAosDto[]> => {
@@ -387,6 +392,7 @@ const getAllRecordAos = async (
       date: recordDate,
       writerPhoto: writer.photo,
       writerName: writer.nick_name,
+      isMyRecord: writer.id === userId,
     };
 
     const commentsResponse: CommentDto[] = [];
@@ -418,6 +424,7 @@ const getAllRecordAos = async (
         content: comment.content,
         emoji: comment.emoji,
         date: commentDate,
+        isMyComment: writer.id === userId,
       };
 
       const existWriter = commentsResponse.find(
@@ -444,7 +451,7 @@ const getAllRecordAos = async (
 };
 
 //* 기록 상세조회 ( NEW !!!!!)
-const getRecordNew = async (
+const getRecord = async (
   userId: number,
   familyId: number,
   recordId: number,
@@ -525,9 +532,11 @@ const getRecordNew = async (
     date: recordDate,
     writerPhoto: writer.photo,
     writerName: writer.nick_name,
+    isMyRecord: writer.id === userId,
   };
 
   const recentComments: CommentDto[] = await commentService.getAllComment(
+    userId,
     recordId
   );
 
@@ -549,7 +558,7 @@ const recordService = {
   getRecord,
   getAllRecord,
   getAllRecordAos,
-  getRecordNew,
+  //getRecordNew,
 };
 
 export default recordService;

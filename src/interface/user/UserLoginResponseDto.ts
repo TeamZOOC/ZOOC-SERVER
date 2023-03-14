@@ -1,4 +1,5 @@
 export interface UserLoginResponseDto {
-  jwtToken: string;
+  accessToken: string;
+  refreshToken: string;
   isExistedUser: boolean;
 }

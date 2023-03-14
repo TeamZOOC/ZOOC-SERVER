@@ -39,7 +39,7 @@ jobs:
           echo TYPE=${{ secrets.TYPE }} >> .env
           echo PROJECT_ID=${{ secrets.PROJECT_ID }} >> .env
           echo PRIVATE_KEY_ID=${{ secrets.PRIVATE_KEY_ID }} >> .env
-          echo PRIVATE_KEY=${{ secrets.PRIVATE_KEY }} >> .env
+          echo "PRIVATE_KEY=$(echo "${{ secrets.PRIVATE_KEY }}" | tr -d '\n')" >> .env
           echo CLIENT_EMAIL=${{ secrets.CLIENT_EMAIL }} >> .env
           echo CLIENT_ID=${{ secrets.CLIENT_ID }} >> .env
           echo AUTH_URL=${{ secrets.AUTH_URL }} >> .env
